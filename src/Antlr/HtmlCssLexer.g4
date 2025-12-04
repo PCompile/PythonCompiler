@@ -160,7 +160,6 @@ PERCENT
 DIMENSION
     : [0-9]+ ('.' [0-9]+)? [a-zA-Z]+
     ;
-
 // Strings
 STRING
     : '"' (~["\r\n])* '"' | '\'' (~['\r\n])* '\''
