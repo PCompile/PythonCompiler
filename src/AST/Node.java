@@ -1,23 +1,24 @@
 package AST;
 
 public abstract class Node {
-    protected int line;
-    protected int column;
+    private final int line;
+    private final String nodeName;
 
-    public Node(int line, int column) {
+    public Node(int line, String nodeName) {
         this.line = line;
-        this.column = column;
+        this.nodeName = nodeName;
     }
 
-    public int getLine() { return line; }
-    public int getColumn() { return column; }
+    public int getLine() {
+        return line;
+    }
 
     public String getNodeName() {
-        return getClass().getSimpleName();
+        return nodeName;
     }
 
     @Override
     public String toString() {
-        return getNodeName() + " [line=" + line + ", col=" + column + "]";
+        return nodeName + " (line " + line + ")";
     }
 }
