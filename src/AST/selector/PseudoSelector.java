@@ -1,14 +1,23 @@
 package AST.selector;
 
 import AST.SimpleSelector;
-//pseudo_selector
-//    : COLON_CSS IDENT   #pseudoClassSelector
-//    ;
-public class PseudoSelector extends SimpleSelector {
-    public String pseudo;
 
-    public PseudoSelector(int line, int column, String pseudo) {
-        super(line, column);
+/**
+ * يمثل الـ pseudoClassSelector:
+ *   COLON_CSS IDENT   #pseudoClassSelector
+ */
+public class PseudoSelector extends SimpleSelector implements SelectorItem {
+    private final String pseudo;
+
+    public PseudoSelector(int line, String pseudo) {
+        super(line, "PseudoSelector");
         this.pseudo = pseudo;
+    }
+
+    public String getPseudo() { return pseudo; }
+
+    @Override
+    public String toString() {
+        return getNodeName() + ":" + pseudo;
     }
 }

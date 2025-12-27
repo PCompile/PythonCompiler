@@ -2,6 +2,8 @@ parser grammar HtmlCssParser;
 
 options { tokenVocab=HtmlCssLexer; }
 
+// ================= START =================
+
 document
     : (node)* EOF
       #DocumentRule

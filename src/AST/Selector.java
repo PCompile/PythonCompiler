@@ -2,11 +2,29 @@ package AST;
 
 import java.util.ArrayList;
 import java.util.List;
-//| selector LBRACE_CSS css_body RBRACE_CSS   #selectorRule
-public class Selector extends CssNode {
-    public List<SelectorPart> parts = new ArrayList<>();
 
-    public Selector(int line, int column) {
-        super(line, column);
+/**
+ * يمثل قاعدة selector:
+ *   selector LBRACE_CSS css_body RBRACE_CSS   #selectorRule
+ */
+public class Selector extends Node {
+    private final List<SelectorPart> parts;
+
+    public Selector(int line) {
+        super(line, "Selector");
+        this.parts = new ArrayList<>();
+    }
+
+    public void addPart(SelectorPart part) {
+        parts.add(part);
+    }
+
+    public List<SelectorPart> getParts() {
+        return parts;
+    }
+
+    @Override
+    public String toString() {
+        return getNodeName() + " " + parts;
     }
 }

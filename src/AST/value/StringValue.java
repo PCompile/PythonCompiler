@@ -3,10 +3,17 @@ package AST.value;
 import AST.CssValue;
 
 public class StringValue extends CssValue {
-    public String value;
+    private final String value;
 
-    public StringValue(int line, int column, String value) {
-        super(line, column);
+    public StringValue(int line, String value) {
+        super(line, "StringValue");
         this.value = value;
+    }
+
+    public String getValue() { return value; }
+
+    @Override
+    public String toString() {
+        return "\"" + value + "\"";
     }
 }

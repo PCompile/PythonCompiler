@@ -1,7 +1,10 @@
 package AST;
 
-public abstract class CssRule extends CssNode {
-    public CssRule(int line, int column) {
-        super(line, column);
+/**
+ * قاعدة مجردة لتمثيل أي CSS Rule.
+ */
+public abstract class CssRule extends Node {
+    public CssRule(int line, String selectorRule) {
+        super(line, "CssRule");
     }
 }

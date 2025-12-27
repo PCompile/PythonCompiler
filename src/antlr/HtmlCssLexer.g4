@@ -26,7 +26,7 @@ JINJA_STMT_START    : '{%'  -> pushMode(JINJA_STMT);
 JINJA_COMMENT_START : '{#'  -> pushMode(JINJA_COMMENT);
 
 mode JINJA_COMMENT;
-COMMENT_TEXT : .*? -> skip ;
+COMMENT_TEXT : .+? -> skip ;
 JINJA_COMMENT_END : '#}' -> popMode ;
 
 mode JINJA_EXPR;
