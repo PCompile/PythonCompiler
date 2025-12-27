@@ -4,7 +4,7 @@ public class UnaryExpr extends Expr {
     private final String op;
     private final Expr expr;
 
-    public UnaryExpr(String op, Expr expr, int line, int column) {
+    public UnaryExpr(String op, Expr expr, int line) {
         super(line,"Unary");
         this.op = op;
         this.expr = expr;

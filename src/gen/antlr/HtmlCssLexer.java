@@ -182,7 +182,6 @@ public class HtmlCssLexer extends Lexer {
 	private void HEX_COLOR_action(RuleContext _localctx, int actionIndex) {
 		switch (actionIndex) {
 		case 0:
-			3,6
 			break;
 		}
 	}

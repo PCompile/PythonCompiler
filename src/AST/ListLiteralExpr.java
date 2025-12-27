@@ -15,6 +15,6 @@ public class ListLiteralExpr extends Expr {
 
     @Override
     public String toString() {
-        return getNodeName() + elements;
+        return getNodeName() + elements.toString();
     }
 }

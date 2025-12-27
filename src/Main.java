@@ -1,13 +1,28 @@
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-void main() {
-    //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-    // to see how IntelliJ IDEA suggests fixing it.
-    IO.println(String.format("Hello and welcome!"));
+import AST.Node;
+import Visitor.JinjaVisitor;
+import antlr.HtmlCssLexer;
+import gen.antlr.HtmlCssParser;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.*;
 
-    for (int i = 1; i <= 5; i++) {
-        //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-        // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-        IO.println("i = " + i);
+public class Main {
+    public static void main(String[] args) throws Exception {
+        // اقرأ ملف أو نص
+        CharStream input = CharStreams.fromFileName("tests/test.html");
+
+        // Lexer و Parser
+        HtmlCssLexer lexer = new HtmlCssLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        HtmlCssParser parser = new HtmlCssParser(tokens);
+
+        // شغّل القاعدة الأساسية
+        ParseTree tree = parser.document();
+
+        // زوري الـ AST باستخدام الفيزيتر
+        JinjaVisitor visitor = new JinjaVisitor();
+        Node ast = visitor.visit(tree);
+
+        // اطبعي الـ AST
+        System.out.println(ast);
     }
 }
