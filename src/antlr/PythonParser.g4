@@ -1,5 +1,6 @@
 parser grammar PythonParser;
 
+
 options { tokenVocab=PythonLexer; }
 
 file_input
@@ -8,40 +9,29 @@ file_input
 
 stmt
     : simple_stmt                            # SimpleStmt
-    | compound_stmt                          # CompoundStmtTop
+    | compound_stmt                          # CompoundStmt
     ;
 
 simple_stmt
-    : small_stmt (SEMI small_stmt)*          // require at least one small_stmt
+    : small_stmt (SEMI small_stmt)*          # SmallStmt
     ;
 
 small_stmt
-    : expr_stmt                              # ExprStmt
+    : assign_stmt                            # ExprStmt
     | return_stmt                            # ReturnStmt
-    | pass_stmt                              # PassStmt
-    | break_stmt                             # BreakStmt
-    | continue_stmt                          # ContinueStmt
+    | PASS                                   # PassStmt
+    | BREAK                                  # BreakStmt
+    | CONTINUE                               # ContinueStmt
     ;
 
-expr_stmt
-    : test (ASSIGN test | augassign test)?   # AssignExpr
+assign_stmt
+    : expr (ASSIGN expr | augassign expr)?   # AssignExpr
     ;
 
 return_stmt
-    : RETURN test?                            # ReturnExpr
+    : RETURN expr?                            # ReturnExpr
     ;
 
-pass_stmt
-    : PASS                                    # PassExpr
-    ;
-
-break_stmt
-    : BREAK                                   # BreakExpr
-    ;
-
-continue_stmt
-    : CONTINUE                                # ContinueExpr
-    ;
 
 augassign
     : PLUSASSIGN
@@ -61,36 +51,36 @@ compound_stmt
     ;
 
 if_stmt
-    : IF test COLON suite (ELIF test COLON suite)* (ELSE COLON suite)?  # IfStmt
+    : IF expr COLON suite (ELIF expr COLON suite)* (ELSE COLON suite)?  # IfStmt
     ;
 
 for_stmt
-    : FOR NAME IN test COLON suite             # ForStmt
+    : FOR IDENTIFIER IN expr COLON suite             # ForStmt
     ;
 
 while_stmt
-    : WHILE test COLON suite                    # WhileStmt
+    : WHILE expr COLON suite                    # WhileStmt
     ;
 
 funcdef
-    : DEF NAME LPAREN parameters? RPAREN COLON suite  # FunctionDefStmt
+    : DEF IDENTIFIER LPAREN parameters? RPAREN COLON suite  # FunctionDefStmt
     ;
 
 parameters
-    : NAME (COMMA NAME)*                        # ParamList
+    : IDENTIFIER (COMMA IDENTIFIER)*                        # ParamList
     ;
 
 classdef
-    : CLASS NAME (LPAREN NAME RPAREN)? COLON suite  # ClassDefStmt
+    : CLASS IDENTIFIER (LPAREN IDENTIFIER RPAREN)? COLON suite  # ClassDefStmt
     ;
 
 import_stmt
     : IMPORT dotted_name (COMMA dotted_name)*      # ImportStmt
-    | FROM dotted_name IMPORT NAME (COMMA NAME)*   # FromImportStmt
+    | FROM dotted_name IMPORT IDENTIFIER (COMMA IDENTIFIER)*   # FromImportStmt
     ;
 
 dotted_name
-    : NAME (DOT NAME)*                             # DottedName
+    : IDENTIFIER (DOT IDENTIFIER)*                             # DottedName
     ;
 
 suite
@@ -98,53 +88,95 @@ suite
     | NEWLINE INDENT stmt+ DEDENT               # BlockSuite
     ;
 
-test
-    : or_test                                   # OrTestExpr
-    ;
-
-or_test
-    : and_test ( OR and_test )*              # OrTest
-    ;
-
-and_test
-    : not_test ( AND not_test )*             # AndTest
-    ;
-
-not_test
-    : NOT not_test                            # NotExpr
-    | comparison                              # CompExpr
-    ;
-
-comparison
-    : arith_expr ( (EQ|NEQ|LT|LTE|GT|GTE) arith_expr )*  # ComparisonExpr
-    ;
-
-arith_expr
-    : term ( (PLUS|MINUS) term )*              # ArithExpr
-    ;
-
-term
-    : factor ( (MUL|DIV|MOD) factor )*        # TermExpr
-    ;
-
-factor
-    : (PLUS|MINUS) factor                       # UnaryExpr
-    | atom                                      # AtomExpr
+expr
+    : expr OR expr                      # OrExpr
+    | expr AND expr                     # AndExpr
+    | NOT expr                          # NotExpr
+    | expr (EQ|NEQ|LT|LTE|GT|GTE) expr  # ComparisonExpr
+    | expr PLUS expr                    # AddExpr
+    | expr MINUS expr                   # SubExpr
+    | expr MUL expr                     # MulExpr
+    | expr DIV expr                     # DivExpr
+    | expr MOD expr                     # ModExpr
+    | atom                              # AtomExpr
     ;
 
 atom
-    : NAME                                      # NameAtom
-    | NUMBER                                    # NumberAtom
-    | STRING                                    # StringAtom
-    | TRUE                                      # TrueAtom
-    | FALSE                                     # FalseAtom
-    | NONE                                      # NoneAtom
-    | LPAREN test RPAREN                         # ParenAtom
-    | atom LBRACKET test RBRACKET               # IndexAtom
-    | atom DOT NAME                             # AttributeAtom
-    | atom LPAREN arglist? RPAREN               # CallAtom
+    : INT                               # IntNumber
+    | DOUBLE                            # DoubleNumber
+    | STRING                            # StringAtom
+    | TRUE                              # TrueAtom
+    | FALSE                             # FalseAtom
+    | NONE                              # NoneAtom
+    | IDENTIFIER                        # NameAtom
+    | LBRACKET atom (COMMA atom)* RBRACKET   # BracketAtomExpr
+    | LBRACE atom (COMMA atom)* RBRACE   # BRACEAtomExpr
+    | LPAREN atom (COMMA)*(atom)* RPAREN   # ParenAtomExpr
+    | LPAREN expr RPAREN                # ParenExpr
+    | LBRACKET expr RBRACKET            # BracketExpr
+    | atom LBRACKET expr RBRACKET       # IndexExpr
+    | atom DOT IDENTIFIER               # AttributeExpr
+    | atom LPAREN arglist? RPAREN       # CallExpr
+    ;
+arglist
+    : expr (COMMA expr)* (COMMA)?       # ArgList
     ;
 
-arglist
-    : test (COMMA test)* (COMMA)?               # ArgList
-    ;
+
+
+//test
+//    : or_test                                   # OrTestExpr
+//    ;
+//
+//or_test
+//    : and_test ( OR and_test )*              # OrTest
+//    ;
+//
+//and_test
+//    : not_test ( AND not_test )*             # AndTest
+//    ;
+//
+//not_test
+//    : NOT not_test                            # NotExpr
+//    | comparison                              # CompExpr
+//    ;
+//
+//comparison
+//    : arith_expr ( (EQ|NEQ|LT|LTE|GT|GTE) arith_expr )*  # ComparisonExpr
+//    ;
+//
+//arith_expr
+//    : term ( (PLUS|MINUS) term )*              # ArithExpr
+//    ;
+//
+//term
+//    : factor ( (MUL|DIV|MOD) factor )*        # TermExpr
+//    ;
+//
+//factor
+//    : (PLUS|MINUS) factor                       # UnaryExpr
+//    | atom                                      # AtomExpr
+//    ;
+//
+//atom
+//    : number                                    # NumberAtom
+//    | STRING                                    # StringAtom
+//    | TRUE                                      # TrueAtom
+//    | FALSE                                     # FalseAtom
+//    | NONE                                      # NoneAtom
+//    | LPAREN test RPAREN                        # ParenAtom
+//    | atom LBRACKET test RBRACKET               # IndexAtom
+//    | atom DOT IDENTIFIER                       # AttributeAtom
+//    | atom LPAREN arglist? RPAREN               # CallAtom
+//    |IDENTIFIER                                 # NameAtom
+//    ;
+//
+//number
+//       :
+//       INT                                      #IntNumber
+//       |
+//       DOUBLE                                   #DoubleNumber
+//       ;
+//arglist
+//    : test (COMMA test)* (COMMA)?               # ArgList
+//    ;
