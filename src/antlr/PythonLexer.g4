@@ -1,4 +1,5 @@
 lexer grammar PythonLexer;
+
 @members {
     java.util.Stack<Integer> indents = new java.util.Stack<>();
     int opened = 0;
@@ -21,7 +22,10 @@ lexer grammar PythonLexer;
                 pendingTokens.add(dedent);
             }
         }
-
+        else if(next.getType()==LPAREN||next.getType()==LBRACKET||next.getType()==LBRACE)
+                opened++;
+        else if(next.getType()==RPAREN||next.getType()==RBRACKET||next.getType()==RBRACE)
+                opened--;
         lastToken = next;
         return next;
     }
@@ -69,9 +73,9 @@ YIELD: 'yield';
 // ---------- OPERATORS ----------
 PLUS        : '+' ;
 MINUS       : '-' ;
-STAR        : '*' ;
-SLASH       : '/' ;
-PERCENT     : '%' ;
+MUL         : '*' ;
+DIV         : '/' ;
+MOD         : '%' ;
 DOUBLESTAR  : '**' ;
 DOUBLESLASH : '//' ;
 
@@ -82,14 +86,14 @@ GT          : '>' ;
 LTE         : '<=' ;
 GTE         : '>=' ;
 
-ASSIGN        : '=' ;
-PLUSEQ        : '+=' ;
-MINUSEQ       : '-=' ;
-STAREQ        : '*=' ;
-SLASHEQ       : '/=' ;
-PERCENTEQ     : '%=' ;
-DOUBLESTAREQ  : '**=' ;
-DOUBLESLASHEQ : '//=' ;
+ASSIGN        : '='  ;
+PLUSASSIGN    : '+=' ;
+MINUSASSIGN   : '-=' ;
+MULASSIGN     : '*=' ;
+DIVASSIGN     : '/=' ;
+MODASSIGN     : '%=' ;
+DOUBLESTAREQ  : '**=';
+DOUBLESLASHEQ : '//=';
 
 BIT_AND   : '&' ;
 BIT_OR    : '|' ;
@@ -119,10 +123,10 @@ ARROW     : '->' ;
 
 // ---------- STRINGS ----------
 STRING
-    :   '"'  ( ~["\\] | ESC )* '"'
-    |   '\'' ( ~['\\] | ESC )* '\''
-    |   '"""' ( ESC | ~["\\] | '\n' | '\r' )*? '"""'
-    |   '\'\'\'' ( ESC | ~["\\] | '\n' | '\r' )*? '\'\'\''
+    :   '"'  ( ~["\r\n\\] | ESC )* '"'
+    |   '\'' ( ~['\r\n\\] | ESC )* '\''
+    |   '"""' ( ESC | ~["\\])*? '"""'
+    |   '\'\'\'' ( ESC | ~["\\])*? '\'\'\''
     ;
 
 fragment ESC
@@ -157,6 +161,9 @@ COMMENTS : '#' ~[\r\n]* -> skip ;
 NEWLINE
     :   ('\r'? '\n')[ \t]*
         {
+        if(opened>0)
+            skip();
+        else{
             String spaces = getText().replaceAll("[\r\n]+", "");
             int indent = spaces.length();
 
@@ -171,7 +178,8 @@ NEWLINE
                     pendingTokens.add(new CommonToken(DEDENT, "<DEDENT>"));
                 }
             }
-        }
+         }
+    }
         -> skip
     ;
 
