@@ -21,6 +21,12 @@ public class Document extends Node {
 
     @Override
     public String toString() {
-        return getNodeName() + " " + children;
+        StringBuilder sb = new StringBuilder();
+        sb.append("Document\n");
+        for (Node child : children) {
+            sb.append(indent(child.toString(), 1)).append("\n");
+        }
+        return sb.toString();
     }
+
 }

@@ -3,6 +3,7 @@ package AST.value;
 import AST.CssValue;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CssValueSequence extends CssValue {
     private final List<CssValue> values = new ArrayList<>();
@@ -18,9 +19,6 @@ public class CssValueSequence extends CssValue {
     public List<CssValue> getValues() {
         return values;
     }
+    @Override public String toString() { return values.stream() .map(Object::toString) .collect(Collectors.joining(" ")); }
 
-    @Override
-    public String toString() {
-        return String.join(" ", values.stream().map(Object::toString).toList());
-    }
 }

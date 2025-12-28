@@ -3,16 +3,17 @@ package Visitor;
 import AST.*;
 import AST.selector.*;
 import AST.value.*;
-import gen.antlr.HtmlCssParser;
-import gen.antlr.HtmlCssParserBaseVisitor;
+import antlr.HtmlCssParser;
+import antlr.HtmlCssParserBaseVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
-
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-// ملاحظة: قد تحتاجين هذه الكلاسات في AST إذا غير موجودة
-// import AST.jinja.*; // IfBlock, ForBlock, BlockBlock, MacroBlock, IncludeNode, SetBlock, FilterBlock, CallBlock
-// import AST.expr.*;  // Expr, IdentifierExpr, LiteralExpr, BinaryExpr, UnaryExpr, FilterExpr, FunctionCallExpr, ParenExpr, ListLiteralExpr
+
 
 public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
 
@@ -29,29 +30,28 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
 
     // ===== HtmlElement =====
     @Override
-    public Node visitHtmlElementNode(HtmlCssParser.HtmlElementNodeContext ctx) {
-        HtmlCssParser.HtmlElementContext inner = (HtmlCssParser.HtmlElementContext) ctx.html_element();
-        String openTagText = inner.OPEN_TAG().getText();
+    public Node visitHtmlElement(HtmlCssParser.HtmlElementContext ctx) {
+        String openTagText = ctx.OPEN_TAG().getText(); // مثل "<li style="color: red;">"
         String tagName = extractTagName(openTagText);
 
         HtmlElement element = new HtmlElement(tagName, ctx.getStart().getLine());
-        for (var childCtx : inner.node()) {
-            Node child = childCtx.accept(this);
-            if (child != null) element.addChild(child);
-        }
-        return element;
-    }
 
-    @Override
-    public Node visitHtmlElement(HtmlCssParser.HtmlElementContext ctx) {
-        String tagName = extractTagName(ctx.OPEN_TAG().getText());
-        HtmlElement element = new HtmlElement(tagName, ctx.getStart().getLine());
+        // استخرج الـ attributes من النص
+        Map<String, String> attrs = extractAttributes(openTagText);
+        for (Map.Entry<String, String> attr : attrs.entrySet()) {
+            element.addAttribute(attr.getKey(), attr.getValue());
+        }
+
+        // أضف الأولاد
         for (HtmlCssParser.NodeContext childCtx : ctx.node()) {
             Node child = visit(childCtx);
             if (child != null) element.addChild(child);
         }
+
         return element;
     }
+
+
 
     // ===== SelfTag =====
     @Override
@@ -69,13 +69,6 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
     }
 
     // ===== TextHtml =====
-    @Override
-    public Node visitTextHtmlNode(HtmlCssParser.TextHtmlNodeContext ctx) {
-        HtmlCssParser.TextHtmlContext inner = (HtmlCssParser.TextHtmlContext) ctx.text_html();
-        String text = inner.TEXT_HTML().getText();
-        return new TextHtml(text, ctx.getStart().getLine());
-    }
-
     @Override
     public Node visitTextHtml(HtmlCssParser.TextHtmlContext ctx) {
         return new TextHtml(ctx.TEXT_HTML().getText(), ctx.getStart().getLine());
@@ -125,13 +118,16 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
     // ===== RootRule =====
     @Override
     public Node visitRootRule(HtmlCssParser.RootRuleContext ctx) {
-        SelectorRule rule = new SelectorRule(ctx.getStart().getLine());
+        // ابني الـ selector: :root
         Selector selector = new Selector(ctx.getStart().getLine());
         SelectorPart part = new SelectorPart(ctx.getStart().getLine());
         part.addItem(new PseudoSelector(ctx.getStart().getLine(), "root"));
         selector.addPart(part);
-        rule.setSelector(selector);
 
+        // ابني الـ rule مع الـ selector
+        SelectorRule rule = new SelectorRule(ctx.getStart().getLine(), selector);
+
+        // أضف التصريحات من الـ body
         HtmlCssParser.Css_bodyContext bodyCtx = ctx.css_body();
         if (bodyCtx instanceof HtmlCssParser.CssBodyContext cssBody) {
             for (HtmlCssParser.Css_declContext declCtx : cssBody.css_decl()) {
@@ -139,16 +135,21 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
                 rule.addDeclaration(decl);
             }
         }
+
         return rule;
     }
+
 
     // ===== SelectorRule =====
     @Override
     public Node visitSelectorRule(HtmlCssParser.SelectorRuleContext ctx) {
-        SelectorRule rule = new SelectorRule(ctx.getStart().getLine());
+        // ابني الـ selector من الـ context
         Selector selector = (Selector) visit(ctx.selector());
-        rule.setSelector(selector);
 
+        // ابني الـ rule مع الـ selector
+        SelectorRule rule = new SelectorRule(ctx.getStart().getLine(), selector);
+
+        // أضف التصريحات من الـ body
         HtmlCssParser.Css_bodyContext bodyCtx = ctx.css_body();
         if (bodyCtx instanceof HtmlCssParser.CssBodyContext cssBody) {
             for (HtmlCssParser.Css_declContext declCtx : cssBody.css_decl()) {
@@ -156,8 +157,10 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
                 rule.addDeclaration(decl);
             }
         }
+
         return rule;
     }
+
 
     // ===== CssDeclaration =====
     @Override
@@ -202,9 +205,10 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
 
     @Override
     public Node visitStringValue(HtmlCssParser.StringValueContext ctx) {
-        return new StringValue(ctx.getStart().getLine(), stripQuotes(ctx.STRING_CSS().getText()));
+        String raw = ctx.STRING_CSS().getText();
+        String unquoted = raw.substring(1, raw.length() - 1);
+        return new StringValue(ctx.getStart().getLine(), unquoted);
     }
-
     @Override
     public Node visitHexColorValue(HtmlCssParser.HexColorValueContext ctx) {
         return new HexColorValue(ctx.getStart().getLine(), ctx.HEX_COLOR().getText());
@@ -227,21 +231,25 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
     }
 
     @Override
-    public Node visitValueFunctionCall(HtmlCssParser.ValueFunctionCallContext ctx) {
-        HtmlCssParser.Function_callContext funcCtx = ctx.function_call();
+    public Node visitCssFunctionCall(HtmlCssParser.CssFunctionCallContext ctx) {
+        // الاسم: قد يكون IDENT أو VAR_FUNC أو RGBA_FUNC؛ خذي أول توكن موجود
+        String funcName =
+                (ctx.getToken(HtmlCssParser.IDENT, 0) != null) ? ctx.getToken(HtmlCssParser.IDENT, 0).getText() :
+                        (ctx.getToken(HtmlCssParser.VAR_FUNC, 0) != null) ? ctx.getToken(HtmlCssParser.VAR_FUNC, 0).getText() :
+                                ctx.getToken(HtmlCssParser.RGBA_FUNC, 0).getText();
 
-        // اسم الدالة باستخدام getToken بدل IDENTIFIER()
-        String funcName = funcCtx.getToken(HtmlCssParser.IDENTIFIER, 0).getText();
         FunctionCallValue func = new FunctionCallValue(ctx.getStart().getLine(), funcName);
 
-        // الوسائط من expr()
-        for (HtmlCssParser.ExprContext argCtx : funcCtx.getRuleContexts(HtmlCssParser.ExprContext.class)) {
-            CssValue arg = (CssValue) visit(argCtx);
-            func.addArgument(arg);
+        HtmlCssParser.Css_valueContext inner = ctx.css_value();
+        if (inner != null) {
+            CssValue valueSeq = (CssValue) visit(inner); // CssValue
+            func.addArgument(valueSeq);
         }
-
-        return func;
+        return func; // CssValue
     }
+
+
+
 
 
 
@@ -312,25 +320,29 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
 
     @Override
     public Node visitValueString(HtmlCssParser.ValueStringContext ctx) {
-        return new LiteralExpr(ctx.getStart().getLine(), stripQuotes(ctx.STRING().getText()));
+        String raw = ctx.STRING().getText();
+        String unquoted = raw.substring(1, raw.length() - 1);
+        return new LiteralExpr(ctx.getStart().getLine(), "\"" + unquoted + "\"");
     }
+
     @Override
     public Node visitValueIdentifier(HtmlCssParser.ValueIdentifierContext ctx) {
-        // نرجع IdentifierExpr كـ base
-        IdentifierExpr base = new IdentifierExpr(ctx.getStart().getLine(), ctx.IDENTIFIER().getText());
+        // البداية: المتغير الأساسي
+        Expr current = new IdentifierExpr(ctx.getStart().getLine(), ctx.IDENTIFIER().getText());
 
-        // إذا في suffix (DOT أو INDEX)، نبني DotAccess أو IndexAccess فوق الـ base
-        Node current = base;
+        // كل suffix لاحق → نبني DotAccess أو IndexAccess فوق الـ Expr
         for (HtmlCssParser.Value_suffixContext sctx : ctx.value_suffix()) {
             if (sctx instanceof HtmlCssParser.DotSuffixContext dotCtx) {
-                current = new DotAccess(ctx.getStart().getLine(), (CssValue) current, dotCtx.IDENTIFIER().getText());
+                current = new DotAccess(ctx.getStart().getLine(), current, dotCtx.IDENTIFIER().getText());
             } else if (sctx instanceof HtmlCssParser.IndexSuffixContext idxCtx) {
-                CssValue index = (CssValue) visit(idxCtx.expr());
-                current = new IndexAccess(ctx.getStart().getLine(), (CssValue) current, index);
+                Expr index = (Expr) visit(idxCtx.expr());
+                current = new IndexAccess(ctx.getStart().getLine(), current, index);
             }
         }
+
         return current;
     }
+
 
     @Override
     public Node visitDotSuffix(HtmlCssParser.DotSuffixContext ctx) {
@@ -340,7 +352,7 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
 
     @Override
     public Node visitIndexSuffix(HtmlCssParser.IndexSuffixContext ctx) {
-        CssValue index = (CssValue) visit(ctx.expr());
+        Expr index = (Expr) visit(ctx.expr());
         return new IndexAccess(ctx.getStart().getLine(), null, index);
     }
 
@@ -348,20 +360,18 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
     public Node visitFunctionCall(HtmlCssParser.FunctionCallContext ctx) {
         FunctionCallExpr func = new FunctionCallExpr(ctx.IDENTIFIER().getText(), ctx.getStart().getLine());
         for (HtmlCssParser.ExprContext argCtx : ctx.expr()) {
-            func.addArg((Expr) visit(argCtx)); // ✅ استخدم addArg بدل addArgument
+            func.addArg((Expr) visit(argCtx));
         }
         return func;
     }
 
+
     @Override
-    public Node visitValueListRule(HtmlCssParser.ValueListRuleContext ctx) {
+    public Node visitListLiteral(HtmlCssParser.ListLiteralContext ctx) {
         ListLiteralExpr list = new ListLiteralExpr(ctx.getStart().getLine());
-
-        for (HtmlCssParser.ExprContext exprCtx : ctx.getRuleContexts(HtmlCssParser.ExprContext.class)) {
-            Expr item = (Expr) visit(exprCtx); // ✅ لازم يكون Expr مش CssValue
-            list.addElement(item);
+        for (HtmlCssParser.Filter_exprContext exprCtx : ctx.filter_expr()) {
+            list.addElement((Expr) visit(exprCtx));
         }
-
         return list;
     }
 
@@ -380,8 +390,14 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
     @Override
     public Node visitFilterExpr(HtmlCssParser.FilterExprContext ctx) {
         Expr base = (Expr) visit(ctx.value());
-        FilterExpr chain = new FilterExpr(ctx.getStart().getLine(), base);
 
+        // إذا ما فيه أي فلتر → رجّع الـ base كما هو
+        if (ctx.IDENTIFIER().isEmpty()) {
+            return base;
+        }
+
+        // الحالة العادية: فلتر على تعبير واحد
+        FilterExpr chain = new FilterExpr(ctx.getStart().getLine(), base);
         for (int i = 0; i < ctx.IDENTIFIER().size(); i++) {
             String fname = ctx.IDENTIFIER(i).getText();
             List<Expr> args = new ArrayList<>();
@@ -392,6 +408,8 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
         }
         return chain;
     }
+
+
 
 
 
@@ -434,7 +452,7 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
     public Node visitEqualityBinary(HtmlCssParser.EqualityBinaryContext ctx) {
         Expr left = (Expr) visit(ctx.equality_expr());
         Expr right = (Expr) visit(ctx.additive_expr());
-        String op = ctx.getStart().getText(); // EQ, NEQ, LT, GT, LTE, GTE, IN
+        String op = ctx.getChild(1).getText(); // EQ, NEQ, LT, GT, LTE, GTE, IN
         return new BinaryExpr(mapOp(op), left, right,ctx.getStart().getLine());
     }
 
@@ -443,26 +461,25 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
         return visit(ctx.multiplicative_expr());
     }
 
-    @Override
-    public Node visitAdditiveBinary(HtmlCssParser.AdditiveBinaryContext ctx) {
+    @Override public Node visitAdditiveBinary(HtmlCssParser.AdditiveBinaryContext ctx) {
         Expr left = (Expr) visit(ctx.additive_expr());
         Expr right = (Expr) visit(ctx.multiplicative_expr());
-        String op = ctx.getChild(1).getText(); // PLUS | MINUS | TILDE
-        return new BinaryExpr( mapOp(op),left,  right ,ctx.getStart().getLine());
+        String op = ctx.getChild(1).getText();  // PLUS | MINUS | TILDE
+               return new BinaryExpr(mapOp(op), left, right, ctx.getStart().getLine());
     }
+
+
 
     @Override
     public Node visitMultiplicativeSingle(HtmlCssParser.MultiplicativeSingleContext ctx) {
         return visit(ctx.unary_expr());
     }
 
-    @Override
-    public Node visitMultiplicativeBinary(HtmlCssParser.MultiplicativeBinaryContext ctx) {
+    @Override public Node visitMultiplicativeBinary(HtmlCssParser.MultiplicativeBinaryContext ctx) {
         Expr left = (Expr) visit(ctx.multiplicative_expr());
         Expr right = (Expr) visit(ctx.unary_expr());
         String op = ctx.getChild(1).getText(); // STAR | SLASH | PERCENT | FLOORDIV
-        return new BinaryExpr( mapOp(op), left, right,ctx.getStart().getLine());
-    }
+        return new BinaryExpr(mapOp(op), left, right, ctx.getStart().getLine()); }
 
     @Override
     public Node visitUnaryNot(HtmlCssParser.UnaryNotContext ctx) {
@@ -531,46 +548,60 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
         // الشرط الأساسي
         Expr condition = (Expr) visit(ctx.stmt_expr(0));
 
-        // جسم الـ if
-        List<Node> body = new ArrayList<>();
-        body.add(visit(ctx.content(0)));
+        // then-content
+        List<Node> thenContent = new ArrayList<>();
+        for (HtmlCssParser.NodeContext nctx : ctx.content(0).getRuleContexts(HtmlCssParser.NodeContext.class)) {
+            thenContent.add(visit(nctx));
+        }
 
-        // نبني كائن JinjaIf
-        JinjaIf ifNode = new JinjaIf(ctx.getStart().getLine(), condition, body);
-
-        // elif*
+        // elif blocks
+        List<JinjaElseIf> elifBranches = new ArrayList<>();
         int elifCount = ctx.ELIF().size();
         for (int i = 0; i < elifCount; i++) {
             Expr cond = (Expr) visit(ctx.stmt_expr(i + 1));
-            Node cont = visit(ctx.content(i + 1));
-            // ممكن تضيفي طريقة addElif(cond, cont) داخل JinjaIf إذا بدك تدعمي elif
-            body.add(new JinjaIf(ctx.getStart().getLine(), cond, List.of(cont)));
+            List<Node> elifContent = new ArrayList<>();
+            for (HtmlCssParser.NodeContext nctx : ctx.content(i + 1).getRuleContexts(HtmlCssParser.NodeContext.class)) {
+                elifContent.add(visit(nctx));
+            }
+            elifBranches.add(new JinjaElseIf(cond, elifContent));
         }
 
-        // else?
+        // else-content
+        List<Node> elseContent = new ArrayList<>();
         if (ctx.ELSE() != null) {
-            Node elseContent = visit(ctx.content(ctx.content().size() - 1));
-            // نفس الشي: يا إما تضيفي خاصية elseContent داخل JinjaIf، أو تعتبريه JinjaIf جديد بشرط null
-            body.add(new JinjaIf(ctx.getStart().getLine(), null, List.of(elseContent)));
+            for (HtmlCssParser.NodeContext nctx : ctx.content(ctx.content().size() - 1)
+                    .getRuleContexts(HtmlCssParser.NodeContext.class)) {
+                elseContent.add(visit(nctx));
+            }
         }
 
-        return ifNode;
+        return new JinjaIfBlock(ctx.getStart().getLine(), condition, thenContent, elifBranches, elseContent);
     }
+
 
     @Override
     public Node visitJinjaForBlock(HtmlCssParser.JinjaForBlockContext ctx) {
+        // اسم المتغير
         String varName = ctx.IDENTIFIER_STMT().getText();
+
+        // الـ iterable (مثلاً range(1,4))
         Node iterable = visit(ctx.stmt_expr(0));
 
+        // محتوى الـ for
         List<Node> body = new ArrayList<>();
-        body.add(visit(ctx.content()));
+        for (HtmlCssParser.NodeContext nctx : ctx.content().getRuleContexts(HtmlCssParser.NodeContext.class)) {
+            Node child = visit(nctx);
+            if (child != null) body.add(child);
+        }
 
+
+        // عقدة الـ for
         JinjaFor forNode = new JinjaFor(ctx.getStart().getLine(), varName, iterable, body);
 
-        // إذا عندك شرط IF داخل الـ for
+        // إذا فيه شرط if داخل الـ for (صيغة جينجا الخاصة)
         if (ctx.IF() != null) {
             Node ifCond = visit(ctx.stmt_expr(1));
-            body.add(new JinjaIf(ctx.getStart().getLine(), ifCond, List.of(visit(ctx.content()))));
+            forNode.setIfCondition(ifCond); // الأفضل تخزنه كـ شرط داخل الـ for بدل ما تبني JinjaIfBlock جديد
         }
 
         return forNode;
@@ -677,11 +708,11 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
     @Override
     public Node visitStmtIdentifier(HtmlCssParser.StmtIdentifierContext ctx) {
         // البداية: المتغير الأساسي
-        Node current = new IdentifierExpr(ctx.getStart().getLine(), ctx.IDENTIFIER_STMT(0).getText());
+        Expr current = new IdentifierExpr(ctx.getStart().getLine(), ctx.IDENTIFIER_STMT(0).getText());
 
         // كل DOT لاحق → نبني DotAccess فوق العقدة الحالية
         for (int i = 1; i < ctx.IDENTIFIER_STMT().size(); i++) {
-            current = new DotAccess(ctx.getStart().getLine(), (CssValue) current, ctx.IDENTIFIER_STMT(i).getText());
+            current = new DotAccess(ctx.getStart().getLine(), current, ctx.IDENTIFIER_STMT(i).getText());
         }
 
         return current;
@@ -706,7 +737,7 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
     @Override
     public Node visitStmtListLiteral(HtmlCssParser.StmtListLiteralContext ctx) {
         ListLiteralExpr list = new ListLiteralExpr(ctx.getStart().getLine());
-        for (HtmlCssParser.Stmt_or_exprContext sox : ctx.stmt_or_expr()) {
+        for (HtmlCssParser.ExprContext sox : ctx.expr()) {
             list.addElement((Expr) visit(sox));
         }
         return list;
@@ -753,7 +784,7 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
     public Node visitStmtBinOp(HtmlCssParser.StmtBinOpContext ctx) {
         Expr left = (Expr) visit(ctx.stmt_or_expr(0));
         Expr right = (Expr) visit(ctx.stmt_or_expr(1));
-        String op = ctx.bin_op_stmt().getStart().getText();
+        String op = ctx.bin_op_stmt().getText();
         return new BinaryExpr(mapOp(op),left, right,ctx.getStart().getLine());
     }
 
@@ -761,9 +792,8 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
     public Node visitStmtLogicalOp(HtmlCssParser.StmtLogicalOpContext ctx) {
         Expr left = (Expr) visit(ctx.stmt_or_expr(0));
         Expr right = (Expr) visit(ctx.stmt_or_expr(1));
-        String op = ctx.logical_op_stmt().getStart().getText(); // AND_STMT | OR_STMT
-        return new BinaryExpr( mapOp(op.equals("and") ? "and" : "or"),left, right,ctx.getStart().getLine());
-    }
+        String op = ctx.logical_op_stmt().getText(); // AND_STMT | OR_STMT
+        return new BinaryExpr(mapOp(op), left, right, ctx.getStart().getLine());    }
 
     // ===== Helpers =====
     private String extractTagName(String openTagText) {
@@ -772,6 +802,21 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
         int spaceIdx = inner.indexOf(' ');
         return (spaceIdx == -1) ? inner : inner.substring(0, spaceIdx);
     }
+
+    private Map<String, String> extractAttributes(String openTagText) {
+        Map<String, String> attrs = new LinkedHashMap<>();
+        // مثال: <li style="color: red;">
+        Pattern pattern = Pattern.compile("(\\w+)\\s*=\\s*\"([^\"]*)\"");
+        Matcher matcher = pattern.matcher(openTagText);
+        while (matcher.find()) {
+            String key = matcher.group(1);
+            String value = matcher.group(2);
+            attrs.put(key, value);
+        }
+        return attrs;
+    }
+
+
 
     private String stripQuotes(String s) {
         if (s == null) return "";

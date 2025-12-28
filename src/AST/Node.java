@@ -1,5 +1,7 @@
 package AST;
 
+import java.util.stream.Collectors;
+
 public abstract class Node {
     private final int line;
     private final String nodeName;
@@ -15,6 +17,11 @@ public abstract class Node {
 
     public String getNodeName() {
         return nodeName;
+    }
+
+   protected String indent(String text, int level) {
+        String pad = " ".repeat(level);
+        return text.lines() .map(line -> pad + line) .collect(Collectors.joining("\n"));
     }
 
     @Override

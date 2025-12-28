@@ -25,6 +25,16 @@ public class StyleBlock extends Node {
 
     @Override
     public String toString() {
-        return getNodeName() + " " + rules;
+        StringBuilder sb = new StringBuilder();
+        sb.append("StyleBlock\n");
+        for (CssRule rule : rules) {
+            sb.append(indent(rule.toString(), 1)).append("\n");
+        }
+        return sb.toString();
     }
+
+
+
 }
+
+

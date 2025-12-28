@@ -3,6 +3,7 @@ package AST.value;
 import AST.CssValue;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * يمثل استدعاء دالة في CSS مثل:
@@ -28,6 +29,11 @@ public class FunctionCallValue extends CssValue {
 
     @Override
     public String toString() {
-        return functionName + "(" + arguments + ")";
+        return functionName + "(" + arguments.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", ")) + ")";
     }
+
+
+
 }

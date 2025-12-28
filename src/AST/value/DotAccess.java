@@ -1,22 +1,23 @@
 package AST.value;
 
-import AST.CssValue;
+import AST.Expr;
 
-public class DotAccess extends CssValue {
-    private final CssValue base;
+public class DotAccess extends Expr {
+    private final Expr base;
     private final String property;
 
-    public DotAccess(int line, CssValue base, String property) {
+    public DotAccess(int line, Expr base, String property) {
         super(line, "DotAccess");
         this.base = base;
         this.property = property;
     }
 
-    public CssValue getBase() { return base; }
+    public Expr getBase() { return base; }
     public String getProperty() { return property; }
 
     @Override
     public String toString() {
-        return base.toString() + "." + property;
+        return getNodeName() + "(" + base.toString() + ", \"" + property + "\")";
     }
+
 }

@@ -2,6 +2,7 @@ package AST;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * يمثل التصريح داخل CSS:
@@ -27,6 +28,10 @@ public class CssDeclaration extends Node {
 
     @Override
     public String toString() {
-        return property + ": " + values;
+        return property + ": " + values.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(" ")) + ";";
     }
+
+
 }

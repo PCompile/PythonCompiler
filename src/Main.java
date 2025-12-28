@@ -1,7 +1,7 @@
 import AST.Node;
 import Visitor.JinjaVisitor;
 import antlr.HtmlCssLexer;
-import gen.antlr.HtmlCssParser;
+import antlr.HtmlCssParser;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 

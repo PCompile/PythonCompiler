@@ -1,6 +1,31 @@
-<div>
-    {{ [1, 2, "hello"] }}
-    <style>
-        p { color: red; margin: 10px 20px; }
-    </style>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ page_title | upper }}</title>
+</head>
+
+<body>
+
+<h1>Hello {{ user.name }}</h1>
+<p>Static text here</p>
+
+{{ 10 + 20 }}
+{{ 10 + 20 * 3 }}
+{{ (10 + 20) * 3 }}
+
+{{ user.age >= 18 }}
+{{ x in items }}
+{{ user.age > 18 and user.active }}
+{{ not disabled }}
+
+{{ items[0] }}
+{{ user.friends[0].name }}
+
+{{ "hello" ~ "world" }}
+{{ [1, 2, 3, user.age] }}
+{{ user.address.city | capitalize }}
+
+</body>
+</html>

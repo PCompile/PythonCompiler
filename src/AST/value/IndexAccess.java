@@ -1,22 +1,23 @@
 package AST.value;
 
-import AST.CssValue;
+import AST.Expr;
 
-public class IndexAccess extends CssValue {
-    private final CssValue base;
-    private final CssValue index;
+public class IndexAccess extends Expr {
+    private final Expr base;
+    private final Expr index;
 
-    public IndexAccess(int line, CssValue base, CssValue index) {
+    public IndexAccess(int line, Expr base, Expr index) {
         super(line, "IndexAccess");
         this.base = base;
         this.index = index;
     }
 
-    public CssValue getBase() { return base; }
-    public CssValue getIndex() { return index; }
+    public Expr getBase() { return base; }
+    public Expr getIndex() { return index; }
 
     @Override
     public String toString() {
-        return base.toString() + "[" + index.toString() + "]";
+        return getNodeName() + "(" + base.toString() + ", " + index.toString() + ")";
     }
+
 }

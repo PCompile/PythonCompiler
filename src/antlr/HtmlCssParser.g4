@@ -159,7 +159,7 @@ value_suffix
 
 // [expr, expr, ...]
 list_literal
-    : LBRACKET (expr (COMMA expr)*)? RBRACKET
+    : LBRACKET (filter_expr (COMMA filter_expr)*)? RBRACKET
       #listLiteral
     ;
 
@@ -254,7 +254,7 @@ stmt_primary
 
 // [1, 2, x] داخل {% ... %}
 stmt_list_literal
-    : LBRACKET_STMT (stmt_or_expr (COMMA_STMT stmt_or_expr)*)? RBRACKET_STMT
+    : LBRACKET_STMT (expr (COMMA_STMT expr)*)? RBRACKET_STMT
       #stmtListLiteral
     ;
 
