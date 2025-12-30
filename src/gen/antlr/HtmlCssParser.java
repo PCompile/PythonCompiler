@@ -30,8 +30,8 @@ public class HtmlCssParser extends Parser {
 		RBRACKET_STMT=83, COMMA_STMT=84, COLON_STMT=85, DOT_STMT=86, PIPE_STMT=87, 
 		TILDE_STMT=88, IDENTIFIER_STMT=89, NUMBER_STMT=90, WS_STMT=91, STYLE_CLOSE_CSS=92, 
 		CSS_COMMENT=93, WS_CSS=94, LBRACE_CSS=95, RBRACE_CSS=96, COLON_CSS=97, 
-		SEMI_CSS=98, COMMA_CSS=99, SPACE=100, DOTCSS=101, HASH=102, GTCSS=103, 
-		PLUSCSS=104, TILDECSS=105, ROOT=106, CSS_VAR=107, HEX_COLOR=108, LPAREN_CSS=109, 
+		SEMI_CSS=98, COMMA_CSS=99, SPACE=100, DOTCSS=101, HEX_COLOR=102, HASH=103, 
+		GTCSS=104, PLUSCSS=105, TILDECSS=106, ROOT=107, CSS_VAR=108, LPAREN_CSS=109, 
 		RPAREN_CSS=110, PERCENTCsd=111, IDENT=112, VAR_FUNC=113, RGBA_FUNC=114, 
 		NUMBERCSS=115, STRING_CSS=116;
 	public static final int
@@ -79,7 +79,7 @@ public class HtmlCssParser extends Parser {
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, "'</style>'", null, null, "'{'", "'}'", null, "';'", 
-			null, "'\\n'", null, "'#'", null, null, null, "':root'", null, null, 
+			null, "'\\n'", null, null, "'#'", null, null, null, "':root'", null, 
 			null, null, null, null, "'var'", "'rgba'"
 		};
 	}
@@ -102,7 +102,7 @@ public class HtmlCssParser extends Parser {
 			"DOT_STMT", "PIPE_STMT", "TILDE_STMT", "IDENTIFIER_STMT", "NUMBER_STMT", 
 			"WS_STMT", "STYLE_CLOSE_CSS", "CSS_COMMENT", "WS_CSS", "LBRACE_CSS", 
 			"RBRACE_CSS", "COLON_CSS", "SEMI_CSS", "COMMA_CSS", "SPACE", "DOTCSS", 
-			"HASH", "GTCSS", "PLUSCSS", "TILDECSS", "ROOT", "CSS_VAR", "HEX_COLOR", 
+			"HEX_COLOR", "HASH", "GTCSS", "PLUSCSS", "TILDECSS", "ROOT", "CSS_VAR", 
 			"LPAREN_CSS", "RPAREN_CSS", "PERCENTCsd", "IDENT", "VAR_FUNC", "RGBA_FUNC", 
 			"NUMBERCSS", "STRING_CSS"
 		};
@@ -5090,7 +5090,7 @@ public class HtmlCssParser extends Parser {
 			setState(540);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (((((_la - 97)) & ~0x3f) == 0 && ((1L << (_la - 97)) & 33329L) != 0)) {
+			while (((((_la - 97)) & ~0x3f) == 0 && ((1L << (_la - 97)) & 33873L) != 0)) {
 				{
 				{
 				setState(537);
@@ -5362,7 +5362,7 @@ public class HtmlCssParser extends Parser {
 			setState(570);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (((((_la - 97)) & ~0x3f) == 0 && ((1L << (_la - 97)) & 33265L) != 0)) {
+			while (((((_la - 97)) & ~0x3f) == 0 && ((1L << (_la - 97)) & 33745L) != 0)) {
 				{
 				setState(568);
 				_errHandler.sync(this);
@@ -6419,7 +6419,7 @@ public class HtmlCssParser extends Parser {
 			setState(638);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 258817L) != 0)) {
+			if (((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 258569L) != 0)) {
 				{
 				setState(637);
 				css_value();
@@ -6870,7 +6870,7 @@ public class HtmlCssParser extends Parser {
 		"\u0000\u0000\u0000\u0219\u021b\u0003L&\u0000\u021a\u0219\u0001\u0000\u0000"+
 		"\u0000\u021b\u021e\u0001\u0000\u0000\u0000\u021c\u021a\u0001\u0000\u0000"+
 		"\u0000\u021c\u021d\u0001\u0000\u0000\u0000\u021dK\u0001\u0000\u0000\u0000"+
-		"\u021e\u021c\u0001\u0000\u0000\u0000\u021f\u0220\u0005j\u0000\u0000\u0220"+
+		"\u021e\u021c\u0001\u0000\u0000\u0000\u021f\u0220\u0005k\u0000\u0000\u0220"+
 		"\u0221\u0005_\u0000\u0000\u0221\u0222\u0003\\.\u0000\u0222\u0223\u0005"+
 		"`\u0000\u0000\u0223\u022a\u0001\u0000\u0000\u0000\u0224\u0225\u0003N\'"+
 		"\u0000\u0225\u0226\u0005_\u0000\u0000\u0226\u0227\u0003\\.\u0000\u0227"+
@@ -6886,7 +6886,7 @@ public class HtmlCssParser extends Parser {
 		"\u0001\u0000\u0000\u0000\u0239\u023c\u0001\u0000\u0000\u0000\u023a\u0238"+
 		"\u0001\u0000\u0000\u0000\u023a\u023b\u0001\u0000\u0000\u0000\u023bQ\u0001"+
 		"\u0000\u0000\u0000\u023c\u023a\u0001\u0000\u0000\u0000\u023d\u0241\u0005"+
-		"g\u0000\u0000\u023e\u0241\u0005h\u0000\u0000\u023f\u0241\u0005i\u0000"+
+		"h\u0000\u0000\u023e\u0241\u0005i\u0000\u0000\u023f\u0241\u0005j\u0000"+
 		"\u0000\u0240\u023d\u0001\u0000\u0000\u0000\u0240\u023e\u0001\u0000\u0000"+
 		"\u0000\u0240\u023f\u0001\u0000\u0000\u0000\u0241S\u0001\u0000\u0000\u0000"+
 		"\u0242\u0244\u0005p\u0000\u0000\u0243\u0242\u0001\u0000\u0000\u0000\u0243"+
@@ -6898,13 +6898,13 @@ public class HtmlCssParser extends Parser {
 		"\u024b\u024e\u0001\u0000\u0000\u0000\u024c\u024e\u0005p\u0000\u0000\u024d"+
 		"\u0243\u0001\u0000\u0000\u0000\u024d\u024c\u0001\u0000\u0000\u0000\u024e"+
 		"U\u0001\u0000\u0000\u0000\u024f\u0250\u0005e\u0000\u0000\u0250\u0251\u0005"+
-		"p\u0000\u0000\u0251W\u0001\u0000\u0000\u0000\u0252\u0253\u0005f\u0000"+
+		"p\u0000\u0000\u0251W\u0001\u0000\u0000\u0000\u0252\u0253\u0005g\u0000"+
 		"\u0000\u0253\u0254\u0005p\u0000\u0000\u0254Y\u0001\u0000\u0000\u0000\u0255"+
 		"\u0256\u0005a\u0000\u0000\u0256\u0257\u0005p\u0000\u0000\u0257[\u0001"+
 		"\u0000\u0000\u0000\u0258\u025a\u0003^/\u0000\u0259\u0258\u0001\u0000\u0000"+
 		"\u0000\u025a\u025d\u0001\u0000\u0000\u0000\u025b\u0259\u0001\u0000\u0000"+
 		"\u0000\u025b\u025c\u0001\u0000\u0000\u0000\u025c]\u0001\u0000\u0000\u0000"+
-		"\u025d\u025b\u0001\u0000\u0000\u0000\u025e\u025f\u0005k\u0000\u0000\u025f"+
+		"\u025d\u025b\u0001\u0000\u0000\u0000\u025e\u025f\u0005l\u0000\u0000\u025f"+
 		"\u0260\u0005a\u0000\u0000\u0260\u0262\u0003`0\u0000\u0261\u0263\u0005"+
 		"b\u0000\u0000\u0262\u0261\u0001\u0000\u0000\u0000\u0262\u0263\u0001\u0000"+
 		"\u0000\u0000\u0263\u026b\u0001\u0000\u0000\u0000\u0264\u0265\u0005p\u0000"+
@@ -6916,7 +6916,7 @@ public class HtmlCssParser extends Parser {
 		"\u0000\u026e\u026f\u0001\u0000\u0000\u0000\u026f\u026d\u0001\u0000\u0000"+
 		"\u0000\u026f\u0270\u0001\u0000\u0000\u0000\u0270a\u0001\u0000\u0000\u0000"+
 		"\u0271\u027a\u0005p\u0000\u0000\u0272\u027a\u0005s\u0000\u0000\u0273\u027a"+
-		"\u0005t\u0000\u0000\u0274\u027a\u0005l\u0000\u0000\u0275\u027a\u0005k"+
+		"\u0005t\u0000\u0000\u0274\u027a\u0005f\u0000\u0000\u0275\u027a\u0005l"+
 		"\u0000\u0000\u0276\u027a\u0005o\u0000\u0000\u0277\u027a\u0005c\u0000\u0000"+
 		"\u0278\u027a\u0003d2\u0000\u0279\u0271\u0001\u0000\u0000\u0000\u0279\u0272"+
 		"\u0001\u0000\u0000\u0000\u0279\u0273\u0001\u0000\u0000\u0000\u0279\u0274"+

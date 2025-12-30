@@ -1,31 +1,179 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>{{ page_title | upper }}</title>
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قائمة الأدوات المكتبية - إصدار متطور</title>
 
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --danger-color: #e74c3c;
+            --light-gray: #f8f9fa;
+            --dark-gray: #343a40;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08 );
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background-color: #fff;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .add-item-form {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .add-item-form input {
+            flex-grow: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .add-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .item-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 2rem;
+            color: #888;
+        }
+
+        .item-card {
+            display: flex;
+            align-items: center;
+            padding: 1.2rem;
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .item-icon {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-left: 1.5rem;
+        }
+
+        .item-name {
+            flex-grow: 1;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            line-height: 1;
+        }
+
+        .delete-btn:hover {
+            color: var(--danger-color);
+            background-color: #fbeeee;
+        }
+    </style>
+</head>
 <body>
 
-<h1>Hello {{ user.name }}</h1>
-<p>Static text here</p>
+<div class="container">
+    <header>
+        <h1>قائمة الأدوات</h1>
+    </header>
 
-{{ 10 + 20 }}
-{{ 10 + 20 * 3 }}
-{{ (10 + 20) * 3 }}
+    <!-- Form لإضافة أداة جديدة -->
+    <form class="add-item-form" method="POST" action="{{ url_for('add_item') }}">
+        <input type="text" name="item_name" placeholder="أضف أداة جديدة هنا..." required>
+        <button class="add-btn" type="submit"><i class="fas fa-plus"></i> إضافة</button>
+    </form>
 
-{{ user.age >= 18 }}
-{{ x in items }}
-{{ user.age > 18 and user.active }}
-{{ not disabled }}
-
-{{ items[0] }}
-{{ user.friends[0].name }}
-
-{{ "hello" ~ "world" }}
-{{ [1, 2, 3, user.age] }}
-{{ user.address.city | capitalize }}
+    <ul class="item-list">
+        {% if items %}
+        {% for item in items %}
+        <li class="item-card">
+            <i class="fas fa-star item-icon"></i>
+            <span class="item-name">{{ item }}</span>
+            <form method="POST" action="{{ url_for('delete_item') }}">
+                <input type="hidden" name="item_name" value="{{ item }}">
+                <button class="delete-btn" type="submit"><i class="fas fa-trash-alt"></i></button>
+            </form>
+        </li>
+        {% endfor %}
+        {% else %}
+        <div class="empty-message">
+            <i class="fas fa-box-open fa-3x"></i>
+            <p>القائمة فارغة حالياً</p>
+        </div>
+        {% endif %}
+    </ul>
+</div>
 
 </body>
 </html>

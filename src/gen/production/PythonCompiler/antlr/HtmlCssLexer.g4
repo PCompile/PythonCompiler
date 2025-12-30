@@ -15,7 +15,13 @@ SELF_TAG
 OPEN_TAG  : '<' TAG_NAME (WS_HTML? ATTRIBUTE)* '>' ;
 CLOSE_TAG : '</' TAG_NAME '>' ;
 fragment TAG_NAME : [A-Za-z][A-Za-z0-9_-]* ;
-fragment ATTRIBUTE : NAME '=' '"' VALUE '"' ;
+fragment ATTRIBUTE
+    : NAME ( '=' ( '"' VALUE '"' | UNQUOTED_VALUE ) )?
+    ;
+
+fragment UNQUOTED_VALUE
+    : ~[ \t\r\n">]+
+    ;
 fragment NAME : [A-Za-z_:][A-Za-z0-9_:.-]* ;
 fragment VALUE : ~["]+ ;
 TEXT_HTML : ~[<{]+ ;
@@ -89,13 +95,17 @@ COMMA_CSS  : ',' ;
 SPACE : '\n';
 
 DOTCSS   : '.' ;
+HEX_COLOR
+    : '#' [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F]                // 3 digits
+    | '#' [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F]
+          [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F]                // 6 digits
+    ;
 HASH     : '#' ;
 GTCSS    : '>' ;
 PLUSCSS  : '+' ;
 TILDECSS : '~' ;
 ROOT       : ':root' ;
 CSS_VAR    : '--' [a-zA-Z_] [a-zA-Z0-9_-]* ;
-HEX_COLOR  : '#' [0-9a-fA-F]{3,6} ;
 LPAREN_CSS : '(' ;
 RPAREN_CSS : ')' ;
 PERCENTCsd   : '%' ;
