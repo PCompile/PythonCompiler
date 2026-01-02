@@ -17,7 +17,12 @@ public class DotAccess extends Expr {
 
     @Override
     public String toString() {
-        return getNodeName() + "(" + base.toString() + ", \"" + property + "\")";
+        return "DotAccess{" +
+                "base=" + base +
+                ", property='" + property + '\'' +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 
 }

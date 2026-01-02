@@ -14,6 +14,10 @@ public class VariableReference extends CssValue {
 
     @Override
     public String toString() {
-        return "var(" + name + ")";
+        return "VariableReference{" +
+                "name='" + name + '\'' +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

@@ -16,7 +16,12 @@ public class JinjaBlock extends Node {
 
     @Override
     public String toString() {
-        return "{% block " + name + " %} " + body + " {% endblock %}";
+        return "JinjaBlock{" +
+                "name='" + name + '\'' +
+                ", body=" + body +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 
 }

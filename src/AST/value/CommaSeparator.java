@@ -6,5 +6,11 @@ public class CommaSeparator extends CssValue {
     public CommaSeparator(int line) {
         super(line, "CommaSeparator");
     }
-    @Override public String toString() { return "COMMA"; }
+    @Override
+    public String toString() {
+        return "CommaSeparator{" +
+                "nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
+    }
 }

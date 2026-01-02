@@ -16,6 +16,11 @@ public class JinjaFilter extends Node {
 
     @Override
     public String toString() {
-        return "{% filter " + name + " %} ... {% endfilter %}";
+        return "JinjaFilter{" +
+                "name='" + name + '\'' +
+                ", body=" + body +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

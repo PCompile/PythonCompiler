@@ -1,14 +1,18 @@
 package AST;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class Node {
     private final int line;
     private final String nodeName;
+    private final List<Node> children = new ArrayList<>(); // 🟢 قائمة الأطفال
 
     public Node(int line, String nodeName) {
         this.line = line;
         this.nodeName = nodeName;
+
     }
 
     public int getLine() {
@@ -26,6 +30,18 @@ public abstract class Node {
 
     @Override
     public String toString() {
-        return nodeName + " (line " + line + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append("Node{")
+                .append("nodeName='").append(nodeName).append('\'')
+                .append(", lineNumber=").append(line)
+                .append("}\n");
+
+        for (Node child : children) {
+            // أضف مسافة قبل كل طفل ليتضح التشجير
+            sb.append("  ").append(child.toString().replace("\n", "\n  "));
+        }
+
+        return sb.toString();
     }
+
 }

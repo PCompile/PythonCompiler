@@ -12,6 +12,10 @@ public class JinjaExpr extends Node {
 
     @Override
     public String toString() {
-        return getNodeName() + "{" + expr + '}';
+        return "JinjaExpr{" +
+                "expr=" + expr +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

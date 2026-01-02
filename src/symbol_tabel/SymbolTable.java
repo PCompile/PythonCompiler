@@ -1,14 +1,13 @@
 package symbol_tabel;
 
-import java.util.HashMap;
-import java.util.Collection;
+import java.util.*;
 
 public class SymbolTable {
 
     // ================== Symbol Entry ==================
     public static class SymbolEntry {
-        private String name;
-        private HashMap<String, Object> attributes;
+        private final String name;
+        private final HashMap<String, Object> attributes;
 
         public SymbolEntry(String name) {
             this.name = name;
@@ -28,12 +27,12 @@ public class SymbolTable {
         }
 
         public HashMap<String, Object> getAllAttributes() {
-            return attributes;
+            return new HashMap<>(attributes); // إرجاع نسخة للحماية
         }
     }
 
     // ================== Symbol Table Core ==================
-    private HashMap<String, SymbolEntry> table;
+    private LinkedHashMap<String, SymbolEntry> table;
 
     public SymbolTable() {
         allocate();
@@ -41,12 +40,14 @@ public class SymbolTable {
 
     // allocate: create empty table
     public void allocate() {
-        table = new HashMap<>();
+        table = new LinkedHashMap<>();
     }
 
     // free: clear table
     public void free() {
-        table.clear();
+        if (table != null) {
+            table.clear();
+        }
     }
 
     // lookup: search for a symbol
@@ -93,17 +94,47 @@ public class SymbolTable {
     // helper: print symbol table
     public void print() {
         System.out.println("\n===== Symbol Table =====");
-        System.out.printf("%-12s %-15s %-10s\n", "Name", "Type", "Value");
-        System.out.println("--------------------------------------");
+        System.out.printf("%-15s %-15s %-40s\n", "Name", "Type", "Attributes");
+        System.out.println("--------------------------------------------------------------------------");
 
-        for (SymbolEntry entry : table.values()) {
-            System.out.printf(
-                    "%-12s %-15s %-10s\n",
+        // 1) اجمع كل الرموز في قائمة
+        List<SymbolEntry> entries = new ArrayList<>(table.values());
+
+        // 2) رتّبهم حسب رقم السطر (إذا موجود)
+        entries.sort((a, b) -> {
+            Object la = a.getAttribute("line");
+            Object lb = b.getAttribute("line");
+
+            int lineA = la instanceof Integer ? (Integer) la : Integer.MAX_VALUE;
+            int lineB = lb instanceof Integer ? (Integer) lb : Integer.MAX_VALUE;
+
+            return Integer.compare(lineA, lineB);
+        });
+
+        // 3) اطبع كل رمز مع كل الـ attributes
+        for (SymbolEntry entry : entries) {
+            String type = entry.getAttribute("type") != null ? entry.getAttribute("type").toString() : "";
+
+            // اجمع كل الـ attributes
+            HashMap<String, Object> attrs = entry.getAllAttributes();
+            attrs.remove("type"); // لأننا نعرضه لحاله
+
+            StringBuilder attrString = new StringBuilder();
+            for (String key : attrs.keySet()) {
+                attrString.append(key).append("=").append(attrs.get(key)).append(", ");
+            }
+
+            // إزالة الفاصلة الأخيرة
+            if (attrString.length() > 2) {
+                attrString.setLength(attrString.length() - 2);
+            }
+
+            System.out.printf("%-15s %-15s %-40s\n",
                     entry.getName(),
-                    entry.getAttribute("type"),
-                    entry.getAttribute("value")
-            );
+                    type,
+                    attrString.toString());
         }
     }
+
 
 }

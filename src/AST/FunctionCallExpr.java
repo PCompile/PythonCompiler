@@ -17,6 +17,11 @@ public class FunctionCallExpr extends Expr {
 
     @Override
     public String toString() {
-        return getNodeName() + "(callee=" + callee + ", args=" + args + ")";
+        return "FunctionCallExpr{" +
+                "callee='" + callee + '\'' +
+                ", args=" + args +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

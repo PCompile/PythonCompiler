@@ -19,12 +19,16 @@ public class JinjaIfBlock extends Node {
     }
 
 
-
     @Override
     public String toString() {
-        return "JinjaIfBlock(condition=" + condition +
-                ", then=" + thenContent +
-                ", elif=" + elifBranches +
-                ", else=" + elseContent + ")";
+        return "JinjaIfBlock{" +
+                "condition=" + condition +
+                ", thenContent=" + thenContent +
+                ", elifBranches=" + elifBranches +
+                ", elseContent=" + elseContent +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
+
 }

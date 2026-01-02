@@ -18,6 +18,10 @@ public class PseudoSelector extends SimpleSelector implements SelectorItem {
 
     @Override
     public String toString() {
-        return getNodeName() + ":" + pseudo;
+        return "PseudoSelector{" +
+                "pseudo='" + pseudo + '\'' +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

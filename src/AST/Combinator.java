@@ -18,6 +18,10 @@ public class Combinator extends Node implements SelectorItem {
 
     @Override
     public String toString() {
-        return getNodeName() + " '" + symbol + "'";
+        return "Combinator{" +
+                "symbol='" + symbol + '\'' +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

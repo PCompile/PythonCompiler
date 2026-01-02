@@ -19,6 +19,13 @@ public class JinjaMacro extends Node {
 
     @Override
     public String toString() {
-        return "{% macro " + name + "(" + String.join(", ", params) + ") %} ... {% endmacro %}";
+        return "JinjaMacro{" +
+                "name='" + name + '\'' +
+                ", params=" + params +
+                ", body=" + body +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
+
 }

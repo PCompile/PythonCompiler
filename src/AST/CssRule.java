@@ -18,11 +18,13 @@ public abstract class CssRule extends Node {
 
     @Override
     public String toString() {
-        return selector + " { " +
-                declarations.stream()
-                        .map(Object::toString)
-                        .collect(Collectors.joining(" ")) +
-                " }";
+        return "CssRule{" +
+                "selector=" + selector +
+                ", declarations=" + declarations +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
+
 
 }

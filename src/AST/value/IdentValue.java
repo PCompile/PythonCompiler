@@ -14,6 +14,10 @@ public class IdentValue extends CssValue {
 
     @Override
     public String toString() {
-        return value;
+        return "IdentValue{" +
+                "value='" + value + '\'' +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

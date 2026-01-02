@@ -27,6 +27,10 @@ public class SelectorPart extends Node {
 
     @Override
     public String toString() {
-        return getNodeName() + " " + items;
+        return "SelectorPart{" +
+                "items=" + items +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

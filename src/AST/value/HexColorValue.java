@@ -14,6 +14,10 @@ public class HexColorValue extends CssValue {
 
     @Override
     public String toString() {
-        return value;
+        return "HexColorValue{" +
+                "value='" + value + '\'' +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

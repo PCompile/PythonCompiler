@@ -18,6 +18,10 @@ public class IdSelector extends SimpleSelector implements SelectorItem{
 
     @Override
     public String toString() {
-        return getNodeName() + "#" + id;
+        return "IdSelector{" +
+                "id='" + id + '\'' +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

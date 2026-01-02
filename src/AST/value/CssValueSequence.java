@@ -19,6 +19,13 @@ public class CssValueSequence extends CssValue {
     public List<CssValue> getValues() {
         return values;
     }
-    @Override public String toString() { return values.stream() .map(Object::toString) .collect(Collectors.joining(" ")); }
+    @Override
+    public String toString() {
+        return "CssValueSequence{" +
+                "values=" + values +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
+    }
 
 }

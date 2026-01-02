@@ -14,6 +14,11 @@ public class StringValue extends CssValue {
 
     @Override
     public String toString() {
-        return "\"" + value + "\"";
+        return "StringValue{" +
+                "value='" + value + '\'' +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
+
 }

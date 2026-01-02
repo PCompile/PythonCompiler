@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}قائمة المنتجات{% endblock %}
+{% block content %}
+<h1 class="mb-4">قائمة المنتجات</h1>
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+            <img src="{{ product['image'] }}" class="card-img-top" alt="{{ product['name'] }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ product['name'] }}</h5>
+                <p class="card-text text-muted">{{ product['description'] }}</p>
+                <p class="text-success fw-bold">السعر: {{ product['price'] }} $</p>
+                <div class="d-flex justify-content-between">
+                    <a href="/details/{{ product['id'] }}" class="btn btn-sm btn-info">📄 تفاصيل</a>
+                    <a href="/delete/{{ product['id'] }}" class="btn btn-sm btn-danger">🗑️ حذف</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

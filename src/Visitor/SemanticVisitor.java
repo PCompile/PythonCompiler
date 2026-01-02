@@ -11,9 +11,9 @@ public class SemanticVisitor extends HtmlCssParserBaseVisitor<Void> {
     // ================= Program (Global Scope) =================
     @Override
     public Void visitDocumentRule(HtmlCssParser.DocumentRuleContext ctx) {
-        symbolTable.allocate();          // Global symbol table
+       // symbolTable.allocate();          // Global symbol table
         visitChildren(ctx);              // Traverse AST
-        symbolTable.print();             // Print at end
+       // symbolTable.print();             // Print at end
         return null;
     }
 
@@ -21,50 +21,139 @@ public class SemanticVisitor extends HtmlCssParserBaseVisitor<Void> {
 
     @Override
     public Void visitHtmlElement(HtmlCssParser.HtmlElementContext ctx) {
-
         String openTagText = ctx.OPEN_TAG().getText();
         int line = ctx.getStart().getLine();
 
-        // -------- class="a b c" --------
+        // class="..."
         if (openTagText.contains("class=")) {
-            String classPart = openTagText.split("class=")[1];
-            String classValue = classPart.split("\"")[1]; // a b c
-
-            for (String cls : classValue.split("\\s+")) {
+            String classValue = openTagText.split("class=")[1].split("\"")[1];
+            for (String cls : classValue.trim().split("\\s+")) {
                 SymbolTable.SymbolEntry entry = symbolTable.lookup(cls);
                 if (entry == null) {
                     entry = symbolTable.insert(cls);
                     entry.setAttribute("type", "css_class");
                     entry.setAttribute("line", line);
-                    entry.setAttribute("value", null);
                 }
             }
         }
 
-        // -------- id="myId" --------
+        // id="..."
         if (openTagText.contains("id=")) {
-            String idPart = openTagText.split("id=")[1];
-            String idValue = idPart.split("\"")[1];
-
+            String idValue = openTagText.split("id=")[1].split("\"")[1];
             SymbolTable.SymbolEntry entry = symbolTable.lookup(idValue);
             if (entry == null) {
                 entry = symbolTable.insert(idValue);
                 entry.setAttribute("type", "css_id");
                 entry.setAttribute("line", line);
-                entry.setAttribute("value", null);
+            }
+        }
+
+        // href="..."
+        if (openTagText.contains("href=")) {
+            String hrefValue = openTagText.split("href=")[1].split("\"")[1];
+            SymbolTable.SymbolEntry entry = symbolTable.insert("href@" + line);
+            entry.setAttribute("type", "html_href");
+            entry.setAttribute("line", line);
+            entry.setAttribute("value", hrefValue);
+        }
+
+        // form element
+        if (openTagText.startsWith("<form")) {
+            SymbolTable.SymbolEntry entry = symbolTable.insert("form@" + line);
+            entry.setAttribute("type", "form_element");
+            if (openTagText.contains("method=")) {
+                entry.setAttribute("method", openTagText.split("method=")[1].split("\"")[1]);
+            }
+            if (openTagText.contains("action=")) {
+                entry.setAttribute("action", openTagText.split("action=")[1].split("\"")[1]);
+            }
+        }
+
+        if (openTagText.startsWith("<input")) {
+            SymbolTable.SymbolEntry entry = symbolTable.insert("input@" + line);
+            entry.setAttribute("type", "form_field");
+            if (openTagText.contains("name=")) {
+                entry.setAttribute("name", openTagText.split("name=")[1].split("\"")[1]);
+            }
+            if (openTagText.contains("type=")) {
+                entry.setAttribute("field_type", openTagText.split("type=")[1].split("\"")[1]);
+            }
+            if (openTagText.contains("placeholder=")) {
+                entry.setAttribute("placeholder", openTagText.split("placeholder=")[1].split("\"")[1]);
+            }
+        }
+
+        if (openTagText.startsWith("<button")) {
+            SymbolTable.SymbolEntry entry = symbolTable.insert("button@" + line);
+            entry.setAttribute("type", "form_button");
+            if (openTagText.contains("type=")) {
+                entry.setAttribute("button_type", openTagText.split("type=")[1].split("\"")[1]);
+            }
+        }
+
+
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitSelfTag(HtmlCssParser.SelfTagContext ctx) {
+        String tagText = ctx.SELF_TAG().getText();
+        int line = ctx.getStart().getLine();
+
+        if (tagText.startsWith("<img")) {
+            SymbolTable.SymbolEntry entry = symbolTable.insert("img@" + line);
+            entry.setAttribute("type", "image_tag");
+            if (tagText.contains("src=")) {
+                entry.setAttribute("src", tagText.split("src=")[1].split("\"")[1]);
+            }
+        }
+
+        if (tagText.startsWith("<input")) {
+            SymbolTable.SymbolEntry entry = symbolTable.insert("input@" + line);
+            entry.setAttribute("type", "form_field");
+            if (tagText.contains("name=")) {
+                entry.setAttribute("name", tagText.split("name=")[1].split("\"")[1]);
+            }
+            if (tagText.contains("type=")) {
+                entry.setAttribute("field_type", tagText.split("type=")[1].split("\"")[1]);
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public Void visitJinjaExpr(HtmlCssParser.JinjaExprContext ctx) {
+        String exprText = ctx.getText();
+        int line = ctx.getStart().getLine();
+
+        String cleaned = exprText.replaceAll("[\\{\\}\\s]", "");
+        if (cleaned.contains(".")) {
+            SymbolTable.SymbolEntry entry = symbolTable.lookup(cleaned);
+            if (entry == null) {
+                entry = symbolTable.insert(cleaned);
+                entry.setAttribute("type", "field_access");
+                entry.setAttribute("line", line);
+            }
+        } else {
+            SymbolTable.SymbolEntry entry = symbolTable.lookup(cleaned);
+            if (entry == null) {
+                entry = symbolTable.insert(cleaned);
+                entry.setAttribute("type", "jinja_variable");
+                entry.setAttribute("line", line);
             }
         }
 
         return visitChildren(ctx);
     }
 
-    // ================= JINJA =================
+
 
     // {% set x = ... %}
     @Override
     public Void visitJinjaSetBlock(HtmlCssParser.JinjaSetBlockContext ctx) {
         String name = ctx.IDENTIFIER_STMT().getText();
-        String value = ctx.stmt_expr(0).getText();
+        String value = ctx.stmt_expr().getText();
 
         SymbolTable.SymbolEntry entry = symbolTable.lookup(name);
         if (entry == null) {
@@ -187,4 +276,9 @@ public class SemanticVisitor extends HtmlCssParserBaseVisitor<Void> {
         }
         return null;
     }
+
+    public SymbolTable getSymbolTable() {
+        return symbolTable;
+    }
+
 }

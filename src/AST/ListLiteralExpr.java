@@ -28,12 +28,10 @@ public class ListLiteralExpr extends Expr {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("List[");
-        for (int i = 0; i < elements.size(); i++) {
-            sb.append(elements.get(i).toString());
-            if (i < elements.size() - 1) sb.append(", ");
-        }
-        sb.append("]");
-        return sb.toString();
+        return "ListLiteralExpr{" +
+                "elements=" + elements +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

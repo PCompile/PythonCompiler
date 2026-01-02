@@ -11,9 +11,13 @@ public class ParenExpr extends Expr {
     public Expr getInner() {
         return inner;
     }
-
     @Override
     public String toString() {
-        return "(" + inner.toString() + ")";
+        return "ParenExpr{" +
+                "inner=" + inner +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
+
 }

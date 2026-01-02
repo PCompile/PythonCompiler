@@ -38,10 +38,13 @@ public class JinjaFor extends Node {
 
     @Override
     public String toString() {
-        return "JinjaFor(var=" + varName +
+        return "JinjaFor{" +
+                "varName='" + varName + '\'' +
                 ", iterable=" + iterable +
                 ", body=" + body +
-                (ifCondition != null ? ", if=" + ifCondition : "") +
-                ")";
+                (ifCondition != null ? ", ifCondition=" + ifCondition : "") +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

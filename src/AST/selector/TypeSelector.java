@@ -18,6 +18,10 @@ public class TypeSelector extends SimpleSelector implements SelectorItem {
 
     @Override
     public String toString() {
-        return getNodeName() + " " + name;
+        return "TypeSelector{" +
+                "name='" + name + '\'' +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

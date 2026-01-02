@@ -14,6 +14,11 @@ public class ParenValue extends CssValue {
 
     @Override
     public String toString() {
-        return "(" + inner.toString() + ")";
+        return "ParenValue{" +
+                "inner=" + inner +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
+
 }

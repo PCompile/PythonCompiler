@@ -12,6 +12,11 @@ public class TextHtml extends Node {
 
     @Override
     public String toString() {
-        return getNodeName() + "{ \"" + text + "\" }";
+        return "TextHtml{" +
+                "text='" + text + '\'' +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
+
 }

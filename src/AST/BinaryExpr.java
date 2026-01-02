@@ -18,6 +18,12 @@ public class BinaryExpr extends Expr {
 
     @Override
     public String toString() {
-        return getNodeName()+ "Binary(" + op + ", " + left + ", " + right + ")";
+        return "BinaryExpr{" +
+                "op='" + op + '\'' +
+                ", left=" + left +
+                ", right=" + right +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

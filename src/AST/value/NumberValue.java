@@ -12,5 +12,12 @@ public class NumberValue extends CssValue {
 
     public String getValue() { return value; }
 
-    @Override public String toString() { return "NUMBERCSS(" + value + ")"; }
+    @Override
+    public String toString() {
+        return "NumberValue{" +
+                "value='" + value + '\'' +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
+    }
 }

@@ -17,7 +17,12 @@ public class IndexAccess extends Expr {
 
     @Override
     public String toString() {
-        return getNodeName() + "(" + base.toString() + ", " + index.toString() + ")";
+        return "IndexAccess{" +
+                "base=" + base +
+                ", index=" + index +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 
 }

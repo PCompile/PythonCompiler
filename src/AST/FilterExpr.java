@@ -23,18 +23,12 @@ public class FilterExpr extends Expr {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(getNodeName());
-        sb.append("(base=").append(base.toString());
-        if (!filters.isEmpty()) {
-            sb.append(", filters=[");
-            for (int i = 0; i < filters.size(); i++) {
-                sb.append(filters.get(i).toString());
-                if (i < filters.size() - 1) sb.append(", ");
-            }
-            sb.append("]");
-        }
-        sb.append(")");
-        return sb.toString();
+        return "FilterExpr{" +
+                "base=" + base +
+                ", filters=" + filters +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 
 
@@ -51,17 +45,12 @@ public class FilterExpr extends Expr {
 
         @Override
         public String toString() {
-            if (args.isEmpty()) {
-                return name + "()";
-            }
-            StringBuilder sb = new StringBuilder(name).append("(");
-            for (int i = 0; i < args.size(); i++) {
-                sb.append(args.get(i).toString());
-                if (i < args.size() - 1) sb.append(", ");
-            }
-            sb.append(")");
-            return sb.toString();
+            return "FilterCall{" +
+                    "name='" + name + '\'' +
+                    ", args=" + args +
+                    '}';
         }
+
 
     }
 }

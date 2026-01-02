@@ -29,9 +29,12 @@ public class FunctionCallValue extends CssValue {
 
     @Override
     public String toString() {
-        return functionName + "(" + arguments.stream()
-                .map(Object::toString)
-                .collect(Collectors.joining(", ")) + ")";
+        return "FunctionCallValue{" +
+                "functionName='" + functionName + '\'' +
+                ", arguments=" + arguments +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 
 

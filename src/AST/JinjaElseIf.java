@@ -13,6 +13,10 @@ public class JinjaElseIf {
 
     @Override
     public String toString() {
-        return "Elif(condition=" + condition + ", body=" + body + ")";
+        return "JinjaElseIf{" +
+                "condition=" + condition +
+                ", body=" + body +
+                '}';
     }
+
 }

@@ -14,6 +14,10 @@ public class PercentValue extends CssValue {
 
     @Override
     public String toString() {
-        return value + "%";
+        return "PercentValue{" +
+                "value='" + value + '\'' +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

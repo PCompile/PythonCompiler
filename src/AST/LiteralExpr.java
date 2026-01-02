@@ -10,6 +10,10 @@ public class LiteralExpr extends Expr {
 
     @Override
     public String toString() {
-        return getNodeName() + "(" + value + ")";
+        return "LiteralExpr{" +
+                "value='" + value + '\'' +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

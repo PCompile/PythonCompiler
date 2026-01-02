@@ -1,18 +1,20 @@
 package AST;
 
-public class JinjaInclude extends Node {
+public class JinjaExtends extends Node {
     private final String file;
 
-    public JinjaInclude(int line, String file) {
-        super(line, "JinjaInclude");
+    public JinjaExtends(int line, String file) {
+        super(line, "JinjaExtends");
         this.file = file;
     }
 
-    public String getFile() { return file; }
+    public String getFile() {
+        return file;
+    }
 
     @Override
     public String toString() {
-        return "JinjaInclude{" +
+        return "JinjaExtends{" +
                 "file='" + file + '\'' +
                 ", nodeName='" + getNodeName() + '\'' +
                 ", lineNumber=" + getLine() +

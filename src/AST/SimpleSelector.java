@@ -8,5 +8,6 @@ package AST;
 public abstract class SimpleSelector extends Node {
     public SimpleSelector(int line, String typeSelector) {
         super(line, "SimpleSelector");
+
     }
 }

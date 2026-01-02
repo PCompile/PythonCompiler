@@ -28,9 +28,12 @@ public class CssDeclaration extends Node {
 
     @Override
     public String toString() {
-        return property + ": " + values.stream()
-                .map(Object::toString)
-                .collect(Collectors.joining(" ")) + ";";
+        return "CssDeclaration{" +
+                "property='" + property + '\'' +
+                ", values=" + values +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 
 

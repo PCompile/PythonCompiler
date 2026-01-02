@@ -1,5 +1,4 @@
 package Visitor;
-
 import AST.*;
 import AST.selector.*;
 import AST.value.*;
@@ -585,7 +584,7 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
         String varName = ctx.IDENTIFIER_STMT().getText();
 
         // الـ iterable (مثلاً range(1,4))
-        Node iterable = visit(ctx.stmt_expr(0));
+        Expr iterable = (Expr) visit(ctx.stmt_expr(0));
 
         // محتوى الـ for
         List<Node> body = new ArrayList<>();
@@ -600,7 +599,7 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
 
         // إذا فيه شرط if داخل الـ for (صيغة جينجا الخاصة)
         if (ctx.IF() != null) {
-            Node ifCond = visit(ctx.stmt_expr(1));
+            Expr ifCond = (Expr) visit(ctx.stmt_expr(1));
             forNode.setIfCondition(ifCond); // الأفضل تخزنه كـ شرط داخل الـ for بدل ما تبني JinjaIfBlock جديد
         }
 
@@ -610,11 +609,18 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
     @Override
     public Node visitJinjaBlockBlock(HtmlCssParser.JinjaBlockBlockContext ctx) {
         String name = ctx.IDENTIFIER_STMT().getText();
+
         List<Node> body = new ArrayList<>();
-        body.add(visit(ctx.content()));
+        Node contentNode = visit(ctx.content());
+        if (contentNode instanceof Content content) {
+            body.addAll(content.getChildren()); // 🟢 فك الأطفال وأضفهم
+        } else if (contentNode != null) {
+            body.add(contentNode);
+        }
 
         return new JinjaBlock(ctx.getStart().getLine(), name, body);
     }
+
 
 
     @Override
@@ -649,7 +655,7 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
     @Override
     public Node visitJinjaSetBlock(HtmlCssParser.JinjaSetBlockContext ctx) {
         String name = ctx.IDENTIFIER_STMT().getText();
-        Node value = visit(ctx.stmt_expr(0)); // Expr أو أي Node
+        Expr value = (Expr) visit(ctx.stmt_expr()); // Expr أو أي Node
         return new JinjaSet(ctx.getStart().getLine(), name, value);
     }
 
@@ -674,10 +680,10 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
         String macroName = ctx.IDENTIFIER_STMT().getText();
 
         // args لازم تكون List<Node> حسب الـ AST
-        List<Node> args = new ArrayList<>();
+        List<Expr> args = new ArrayList<>();
         if (ctx.LPAREN_STMT() != null) {
             for (HtmlCssParser.Stmt_or_exprContext sox : ctx.stmt_or_expr()) {
-                args.add(visit(sox)); // رجع Node بدل Expr
+                args.add((Expr) visit(sox)); // رجع Node بدل Expr
             }
         }
 
@@ -692,6 +698,30 @@ public class JinjaVisitor extends HtmlCssParserBaseVisitor<Node> {
 
         return new JinjaCall(ctx.getStart().getLine(), macroName, args, body);
     }
+
+
+    @Override
+    public Node visitJinjaExtends(HtmlCssParser.JinjaExtendsContext ctx) {
+        String file = stripQuotes(ctx.STRING_STMT().getText());
+        return new JinjaExtends(ctx.getStart().getLine(), file);
+    }
+
+    @Override
+    public Node visitJinjaWithBlock(HtmlCssParser.JinjaWithBlockContext ctx) {
+        String varName = ctx.IDENTIFIER_STMT().getText();
+        Node value = visit(ctx.stmt_expr());
+
+        List<Node> body = new ArrayList<>();
+        Node contentNode = visit(ctx.content());
+        if (contentNode instanceof Content content) {
+            body.addAll(content.getChildren());
+        } else if (contentNode != null) {
+            body.add(contentNode);
+        }
+
+        return new JinjaWith(ctx.getStart().getLine(), varName, value, body);
+    }
+
 
     // ================= JINJA: stmt_expr family =================
 

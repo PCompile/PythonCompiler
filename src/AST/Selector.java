@@ -25,6 +25,10 @@ public class Selector extends Node {
 
     @Override
     public String toString() {
-        return getNodeName() + " " + parts;
+        return "Selector{" +
+                "parts=" + parts +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

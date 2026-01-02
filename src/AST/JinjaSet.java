@@ -15,6 +15,11 @@ public class JinjaSet extends Node {
 
     @Override
     public String toString() {
-        return "{% set " + name + " = " + value + " %}";
+        return "JinjaSet{" +
+                "name='" + name + '\'' +
+                ", value=" + value +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

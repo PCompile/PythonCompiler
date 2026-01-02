@@ -10,6 +10,10 @@ public class IdentifierExpr extends Expr {
 
     @Override
     public String toString() {
-        return getNodeName() + "(" + name + ")";
+        return "IdentifierExpr{" +
+                "name='" + name + '\'' +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

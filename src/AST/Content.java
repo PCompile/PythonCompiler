@@ -16,6 +16,10 @@ public class Content extends Node {
 
     @Override
     public String toString() {
-        return getNodeName() + " " + children;
+        return "Content{" +
+                "children=" + children +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
 }

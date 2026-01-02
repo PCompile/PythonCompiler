@@ -15,6 +15,12 @@ public class UnaryExpr extends Expr {
 
     @Override
     public String toString() {
-        return getNodeName()+"(" + op + ", " + expr + ")";
+        return "UnaryExpr{" +
+                "op='" + op + '\'' +
+                ", expr=" + expr +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
+
 }

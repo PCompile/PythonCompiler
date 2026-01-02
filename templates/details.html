@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}تفاصيل المنتج{% endblock %}
+{% block content %}
+<div class="card shadow-sm p-4">
+    <img src="{{ product['image'] }}" class="card-img-top mb-3" alt="{{ product['name'] }}">
+    <h2>{{ product['name'] }}</h2>
+    <p class="text-success fw-bold">السعر: {{ product['price'] }} $</p>
+    <p>{{ product['description'] }}</p>
+    <a href="/" class="btn btn-secondary">⬅️ العودة للقائمة</a>
+</div>
+{% endblock %}

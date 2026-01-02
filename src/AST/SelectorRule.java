@@ -16,6 +16,12 @@ public class SelectorRule extends CssRule {
 
     @Override
     public String toString() {
-        return super.toString(); // body { background: url("bg.png"); }
+        return "SelectorRule{" +
+                "selector=" + selector +
+                ", declarations=" + declarations +
+                ", nodeName='" + getNodeName() + '\'' +
+                ", lineNumber=" + getLine() +
+                '}';
     }
+
 }
