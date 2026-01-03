@@ -112,8 +112,8 @@ atom
     | atom LPAREN arglist? RPAREN       # CallExpr
     | LBRACKET atom (COMMA atom)* RBRACKET   # BracketAtomExpr
     | LBRACE atom (COMMA atom)* RBRACE   # BRACEAtomExpr
-    | LPAREN atom (COMMA)*(atom)* RPAREN   # ParenAtomExpr
-    | LPAREN expr RPAREN                # ParenExpr
+    | LPAREN atom (COMMA atom)* (COMMA)? RPAREN   # ParenAtomExpr
+//    | LPAREN expr RPAREN                # ParenExpr
     | LBRACKET expr RBRACKET            # BracketExpr
     | atom LBRACKET expr RBRACKET       # IndexExpr
     | atom DOT IDENTIFIER          # AttributeExpr
