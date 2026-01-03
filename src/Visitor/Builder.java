@@ -1,5 +1,7 @@
 package Visitor;
 import AST.Flask.*;
+import antlr.PythonParser;
+import antlr.PythonParserBaseVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import symbol_tabel.SymbolTable;
@@ -78,7 +80,13 @@ public class Builder extends PythonParserBaseVisitor<Node> {
             Expression right = (Expression) visit(ctx.expr(1));
             String varName = ctx.expr(0).getText();
 
-            SymbolTable.SymbolEntry entry = symbolTable.insert(varName);
+            SymbolTable.SymbolEntry entry = symbolTable.lookup(varName);
+
+            if (entry == null) {
+                entry = symbolTable.insert(varName);
+            } else {
+                System.out.println("Updating existing symbol: " + varName);
+            }
 
             String typeStr = "Variable";
             if (right.toString().contains("Type: STRING")) typeStr = "STRING";
@@ -112,7 +120,13 @@ public class Builder extends PythonParserBaseVisitor<Node> {
     @Override
     public Node visitNameAtom(PythonParser.NameAtomContext ctx) {
         if (symbolTable.lookup(ctx.IDENTIFIER().getText()) == null) {
-            SymbolTable.SymbolEntry entry = symbolTable.insert(ctx.IDENTIFIER().getText());
+            SymbolTable.SymbolEntry entry = symbolTable.lookup(ctx.IDENTIFIER().getText());
+
+            if (entry == null) {
+                entry = symbolTable.insert(ctx.IDENTIFIER().getText());
+            } else {
+                System.out.println("Updating existing symbol: " + ctx.IDENTIFIER().getText());
+            }
             entry.setAttribute("type", "Identifier/Ref");
             entry.setAttribute("status", "Referenced on line " + ctx.start.getLine());
         }
@@ -298,7 +312,13 @@ public class Builder extends PythonParserBaseVisitor<Node> {
         Expression iterable = (Expression) visit(ctx.expr());
 
         ForState forState = new ForState(line, target, iterable);
-        SymbolTable.SymbolEntry entry = symbolTable.insert(ctx.IDENTIFIER().getText());
+        SymbolTable.SymbolEntry entry = symbolTable.lookup(ctx.IDENTIFIER().getText());
+
+        if (entry == null) {
+            entry = symbolTable.insert(ctx.IDENTIFIER().getText());
+        } else {
+            System.out.println("Updating existing symbol: " + ctx.IDENTIFIER().getText());
+        }
         entry.setAttribute("type", "Variable (Loop)");
         entry.setAttribute("value", "Iterating from: " + ctx.expr().getText());
 
@@ -319,9 +339,15 @@ public class Builder extends PythonParserBaseVisitor<Node> {
     public Node visitFunctionDefStmt(PythonParser.FunctionDefStmtContext ctx) {
         int line = ctx.start.getLine();
         String funcName = ctx.IDENTIFIER().getText();
-        SymbolTable.SymbolEntry funcEntry = symbolTable.insert(funcName);
-        funcEntry.setAttribute("type", "Function");
-        funcEntry.setAttribute("value", "Line " + line);
+        SymbolTable.SymbolEntry entry = symbolTable.lookup(funcName);
+
+        if (entry == null) {
+            entry = symbolTable.insert(funcName);
+        } else {
+            System.out.println("Updating existing symbol: " + funcName);
+        }
+        entry.setAttribute("type", "Function");
+        entry.setAttribute("value", "Line " + line);
         FuncDef funcState = new FuncDef(line, funcName);
         List<TerminalNode> params=new ArrayList<>();
         if(ctx.parameters()!=null){
@@ -421,17 +447,23 @@ public class Builder extends PythonParserBaseVisitor<Node> {
         return elements;
     }
 
-    @Override
-    public Node visitParenExpr(PythonParser.ParenExprContext ctx) {
-        return visit(ctx.expr());
-    }
+//    @Override
+//    public Node visitParenExpr(PythonParser.ParenExprContext ctx) {
+//        return visit(ctx.expr());
+//    }
 
     @Override
     public Node visitClassDefStmt(PythonParser.ClassDefStmtContext ctx) {
         int line = ctx.start.getLine();
         String className = ctx.IDENTIFIER(0).getText();
         String classParentName="";
-        SymbolTable.SymbolEntry entry = symbolTable.insert(className);
+        SymbolTable.SymbolEntry entry = symbolTable.lookup(className);
+
+        if (entry == null) {
+            entry = symbolTable.insert(className);
+        } else {
+            System.out.println("Updating existing symbol: " + className);
+        }
         entry.setAttribute("type", "CLASS");
         if (ctx.IDENTIFIER().size() > 1) {
             classParentName=(ctx.IDENTIFIER(1).getText());
@@ -459,7 +491,12 @@ public class Builder extends PythonParserBaseVisitor<Node> {
 
         for (PythonParser.Dotted_nameContext dn : ctx.dotted_name()) {
             importState.addPath(dn.getText());
-            SymbolTable.SymbolEntry entry = symbolTable.insert(dn.getText());
+            SymbolTable.SymbolEntry entry = symbolTable.lookup(dn.getText());
+            if (entry == null) {
+                entry = symbolTable.insert(dn.getText());
+            } else {
+                System.out.println("Updating existing symbol: " + dn.getText());
+            }
             entry.setAttribute("type", "MODULE/IMPORT");
             entry.setAttribute("defined_at_line", String.valueOf(line));
         }
@@ -476,7 +513,12 @@ public class Builder extends PythonParserBaseVisitor<Node> {
 
         for (TerminalNode id : ctx.IDENTIFIER()) {
             fromState.addName(id.getText());
-            SymbolTable.SymbolEntry entry = symbolTable.insert(id.getText());
+            SymbolTable.SymbolEntry entry = symbolTable.lookup(id.getText());
+            if (entry == null) {
+                entry = symbolTable.insert(id.getText());
+            } else {
+                System.out.println("Updating existing symbol: " + id.getText());
+            }
             entry.setAttribute("type", "IMPORTED_NAME");
             entry.setAttribute("from_module", module);
             entry.setAttribute("defined_at_line", String.valueOf(line));
@@ -525,7 +567,13 @@ public class Builder extends PythonParserBaseVisitor<Node> {
     @Override
     public Node visitAttributeExpr(PythonParser.AttributeExprContext ctx) {
         if (symbolTable.lookup(ctx.atom().getText()) == null) {
-            SymbolTable.SymbolEntry entry = symbolTable.insert(ctx.atom().getText());
+            SymbolTable.SymbolEntry entry = symbolTable.lookup(ctx.atom().getText());
+
+            if (entry == null) {
+                entry = symbolTable.insert(ctx.atom().getText());
+            } else {
+                System.out.println("Updating existing symbol: " + ctx.atom().getText());
+            }
             entry.setAttribute("type", "OBJECT/MODULE");
             entry.setAttribute("status", "Referenced for attribute: " + ctx.IDENTIFIER().getText());
         }
