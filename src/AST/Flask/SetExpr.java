@@ -20,11 +20,23 @@ public class SetExpr extends Expression {
     }
 
     @Override
-    public String toString() {
-        return "SetExpr{" +
-                "elements=" + elements +
-                ", nodeName='" + nodeName + '\'' +
-                ", lineNumber=" + lineNumber +
-                '}';
+    public String toString(int indent) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(getIndent(indent));
+
+        sb.append("{");
+
+        for (int i = 0; i < elements.size(); i++) {
+            sb.append(elements.get(i).toString(0));
+            if (i < elements.size() - 1) {
+                sb.append(", ");
+            }
+        }
+
+        sb.append("}  (Node: ").append(nodeName)
+                .append(", Line: ").append(lineNumber).append(")");
+
+        return sb.toString();
     }
 }

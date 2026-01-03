@@ -1,6 +1,6 @@
 package AST.Flask;
 
-public abstract class Node {
+public abstract class Node{
     String nodeName;
     int lineNumber;
     public Node(String nodeName, int lineNumber) {
@@ -15,11 +15,13 @@ public abstract class Node {
         return lineNumber;
     }
 
-    @Override
-    public String toString() {
-        return "Node{" +
-                "nodeName='" + nodeName + '\'' +
-                ", lineNumber=" + lineNumber +
-                '}';
+    public abstract String toString(int indent);
+
+    protected String getIndent(int indent) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < indent; i++) {
+            sb.append("    ");
+        }
+        return sb.toString();
     }
 }

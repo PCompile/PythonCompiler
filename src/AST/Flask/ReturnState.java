@@ -12,11 +12,22 @@ public class ReturnState extends SimpleState {
 
 
     @Override
-    public String toString() {
-        return "ReturnState{" +
-                "value=" + value +
-                ", nodeName='" + nodeName + '\'' +
-                ", lineNumber=" + lineNumber +
-                '}';
+    public String toString(int indent) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(getIndent(indent));
+
+        sb.append("RETURN ");
+
+        if (value != null) {
+            sb.append(value.toString(0));
+        } else {
+            sb.append("None");
+        }
+
+        sb.append("  [Node: ").append(nodeName)
+                .append(", Line: ").append(lineNumber).append("]");
+
+        return sb.toString();
     }
 }

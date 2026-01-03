@@ -2,20 +2,22 @@ package AST.Flask;
 
 public class UnaryExpr extends Expression {
     Expression expr;
-    String operator;
-    UnaryExpr(int lineNumber,Expression expr, String operator){
+    public UnaryExpr(int lineNumber, Expression expr){
         super("UnaryExpression",lineNumber);
         this.expr = expr;
-        this.operator = operator;
     }
 
     @Override
-    public String toString() {
-        return "UnaryExpr{" +
-                "expr=" + expr +
-                ", operator='" + operator + '\'' +
-                ", nodeName='" + nodeName + '\'' +
-                ", lineNumber=" + lineNumber +
-                '}';
+    public String toString(int indent) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(getIndent(indent));
+
+        sb.append("(").append(" ").append(expr.toString(0)).append(")");
+
+        sb.append("  [Node: ").append(nodeName)
+                .append(", Line: ").append(lineNumber).append("]");
+
+        return sb.toString();
     }
 }

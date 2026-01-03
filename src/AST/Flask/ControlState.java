@@ -11,11 +11,16 @@ public class ControlState extends SimpleState {
     }
 
     @Override
-    public String toString() {
-        return "ControlState{" +
-                "type='" + type + '\'' +
-                ", lineNumber=" + lineNumber +
-                ", nodeName='" + nodeName + '\'' +
-                '}';
+    public String toString(int indent) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(getIndent(indent));
+
+        sb.append(type.toUpperCase());
+
+        sb.append("  [Node: ").append(nodeName)
+                .append(", Line: ").append(lineNumber).append("]");
+
+        return sb.toString();
     }
 }

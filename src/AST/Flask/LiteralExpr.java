@@ -10,12 +10,10 @@ public class LiteralExpr extends Expression {
     }
 
     @Override
-    public String toString() {
-        return "LiteralExpr{" +
-                "literal='" + literal + '\'' +
-                ", type='" + type + '\'' +
-                ", nodeName='" + nodeName + '\'' +
-                ", lineNumber=" + lineNumber +
-                '}';
+    public String toString(int indent) {
+
+
+        return getIndent(indent) + literal +
+                "  <Type: " + type + ", Line: " + lineNumber + ">";
     }
 }

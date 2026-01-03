@@ -11,12 +11,8 @@ public class AttributeExpr extends Expression {
     }
 
     @Override
-    public String toString() {
-        return "AttributeExpr{" +
-                "base=" + base +
-                ", attribute='" + attribute + '\'' +
-                ", nodeName='" + nodeName + '\'' +
-                ", lineNumber=" + lineNumber +
-                '}';
+    public String toString(int indent) {
+        return getIndent(indent) + base.toString(0) + "." + attribute +
+                " (" + nodeName + ", L: " + lineNumber + ")";
     }
 }

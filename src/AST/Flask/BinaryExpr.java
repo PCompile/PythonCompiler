@@ -4,7 +4,7 @@ public class BinaryExpr extends Expression{
     Expression left;
     Expression right;
     String operator;
-    public BinaryExpr(int lineNumber,Expression left, Expression right, String operator) {
+    public BinaryExpr(int lineNumber, String operator,Expression left, Expression right) {
         super("BinaryExpression",lineNumber);
         this.left = left;
         this.right = right;
@@ -12,13 +12,8 @@ public class BinaryExpr extends Expression{
     }
 
     @Override
-    public String toString() {
-        return "BinaryExpr{" +
-                "left=" + left +
-                ", right=" + right +
-                ", operator='" + operator + '\'' +
-                ", nodeName='" + nodeName + '\'' +
-                ", lineNumber=" + lineNumber +
-                '}';
+    public String toString(int indent) {
+        return getIndent(indent) + "(" + left.toString(0) + " " + operator + " " + right.toString(0) + ")" +
+                " [" + nodeName + ", Line: " + lineNumber + "]";
     }
 }

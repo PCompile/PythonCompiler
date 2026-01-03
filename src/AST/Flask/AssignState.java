@@ -25,13 +25,16 @@ public class AssignState extends SimpleState {
 
 
     @Override
-    public String toString() {
-        return "AssignState{" +
-                "identifier=" + target +
-                ", value=" + value +
-                ", nodeName='" + nodeName + '\'' +
-                ", lineNumber=" + lineNumber +
-                ",operator='" + operator + '\'' +
-                '}';
+    public String toString(int indent) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getIndent(indent));
+
+        String code = target.toString(0) + " " + operator + " " + value.toString(0);
+        sb.append(code);
+
+        sb.append("  [Node: ").append(nodeName)
+                .append(", Line: ").append(lineNumber).append("]");
+
+        return sb.toString();
     }
 }

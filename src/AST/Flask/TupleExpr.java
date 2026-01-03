@@ -3,11 +3,11 @@ package AST.Flask;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListExpr extends Expression {
+public class TupleExpr extends Expression {
     List<Expression> elements;
 
-    public ListExpr(int lineNumber) {
-        super("ListExpr", lineNumber);
+    public TupleExpr(int lineNumber) {
+        super("TupleExpr", lineNumber);
         this.elements = new ArrayList<>();
     }
 
@@ -25,7 +25,7 @@ public class ListExpr extends Expression {
 
         sb.append(getIndent(indent));
 
-        sb.append("[");
+        sb.append("(");
 
         for (int i = 0; i < elements.size(); i++) {
             sb.append(elements.get(i).toString(0));
@@ -34,8 +34,8 @@ public class ListExpr extends Expression {
             }
         }
 
-        sb.append("]  (Node: ").append(nodeName)
-                .append(", Line: ").append(lineNumber).append(")");
+        sb.append(")  [Node: ").append(nodeName)
+                .append(", Line: ").append(lineNumber).append("]");
 
         return sb.toString();
     }

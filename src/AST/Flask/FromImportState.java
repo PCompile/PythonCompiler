@@ -1,20 +1,34 @@
 package AST.Flask;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FromImportState extends Statement {
-     List<String> Path;
+     String path;
      List<String> names;
 
-    public FromImportState(int lineNumber, List<String> Path, List<String> names) {
+    public FromImportState(int lineNumber,String path) {
         super("FromImportStatement", lineNumber);
-        this.Path = Path;
-        this.names = names;
+        this.path = path;
+        this.names = new  ArrayList<>();
+    }
+
+    public void addName(String name) {
+        names.add(name);
     }
 
     @Override
-    public String toString() {
-        return "from " + String.join(".", Path) +
-                " import " + String.join(", ", names);
+    public String toString(int indent) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(getIndent(indent));
+
+        sb.append("FROM ").append(path)
+                .append(" IMPORT ").append(String.join(", ", names));
+
+        sb.append("  [Node: ").append(nodeName)
+                .append(", Line: ").append(lineNumber).append("]");
+
+        return sb.toString();
     }
 }

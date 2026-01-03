@@ -9,11 +9,12 @@ public class VariableExpr extends Expression {
     }
 
     @Override
-    public String toString() {
-        return "VariableExpr{" +
-                "name='" + name + '\'' +
-                ", nodeName='" + nodeName + '\'' +
-                ", lineNumber=" + lineNumber +
-                '}';
+    public String toString(int indent) {
+        if (indent == 0) {
+            return name;
+        }
+
+        return getIndent(indent) + name +
+                "  <Node: " + nodeName + ", Line: " + lineNumber + ">";
     }
 }

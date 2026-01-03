@@ -5,41 +5,42 @@ import java.util.List;
 
 public class IfState extends CompoundState {
     Expression condition;
-    List<Statement> ifBody = new ArrayList<>();
+    BlockState ifBlock;
     List<ElifPart> elifParts;
-    List<Statement> elseBody;
+    BlockState elseBlock;
     public IfState(int lineNumber, Expression condition) {
         super("IFStatement",lineNumber);
         this.condition = condition;
-        this.elseBody = new ArrayList<>();
-        this.ifBody = new ArrayList<>();
         this.elifParts = new ArrayList<>();
     }
 
-    public void addIFBody(Statement statement){
-        ifBody.add(statement);
+    public void setIfBlock(BlockState block) {
+        this.ifBlock = block;
+    }
+
+    public void setElseBlock(BlockState block) {
+        this.elseBlock = block;
     }
     public void addElifPart(ElifPart elifPart){
         elifParts.add(elifPart);
     }
-    public void addElseBody(Statement statement){
-        elseBody.add(statement);
-    }
 
     @Override
-    public String toString() {
+    public String toString(int indent) {
         StringBuilder sb = new StringBuilder();
-        sb.append("If ").append(condition).append("\n");
-        for (Statement statement : ifBody) {
-            sb.append(statement).append("\n");
-        }
+
+        sb.append("IF ").append(condition.toString(indent)).append(":\n");
+        sb.append(ifBlock.toString(4)).append("\n");
+
         for (ElifPart e : elifParts) {
-            sb.append("\nElif ").append(e);
+            sb.append(e.toString(0));
         }
-        sb.append("\nElse:\n");
-       for (Statement e : elseBody) {
-           sb.append(e);
-       }
+
+        if (elseBlock != null) {
+            sb.append("ELSE:\n");
+            sb.append(elseBlock.toString(4));
+        }
+
         return sb.toString();
     }
 }
