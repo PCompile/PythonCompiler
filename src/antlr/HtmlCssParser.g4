@@ -55,13 +55,11 @@ jinja_expr
       #jinjaExpr
     ;
 
-// أعلى مستوى: expr يستدعي or_expr
 expr
     : or_expr
       #exprRule
     ;
 
-// or
 or_expr
     : and_expr
       #orSingle
@@ -69,7 +67,6 @@ or_expr
       #orBinary
     ;
 
-// and
 and_expr
     : equality_expr
       #andSingle
@@ -77,7 +74,6 @@ and_expr
       #andBinary
     ;
 
-// ==, !=, <, >, <=, >=, in
 equality_expr
     : additive_expr
       #equalitySingle
@@ -85,7 +81,6 @@ equality_expr
       #equalityBinary
     ;
 
-// +, -, ~
 additive_expr
     : multiplicative_expr
       #additiveSingle
@@ -94,7 +89,6 @@ additive_expr
     ;
 
 
-// *, /, %, //
 multiplicative_expr
     : unary_expr
       #multiplicativeSingle
@@ -102,7 +96,6 @@ multiplicative_expr
       #multiplicativeBinary
     ;
 
-// unary: not, +, -, ~
 unary_expr
     : NOT unary_expr
       #unaryNot
@@ -114,7 +107,6 @@ unary_expr
       #unaryPrimary
     ;
 
-// filters بعد ما نكون حسبنا القيمة الأساسية
 primary
     : filter_expr
       #primaryRule
@@ -126,7 +118,7 @@ filter_expr
       #filterExpr
     ;
 
-// القيم الأساسية داخل {{ ... }}
+
 value
     : function_call
       #valueFunctionCall
@@ -148,7 +140,6 @@ function_call
           #functionCall
         ;
 
-// لاحقات للـ identifier: .name أو [expr]
 value_suffix
     : DOT IDENTIFIER
       #dotSuffix
@@ -163,7 +154,6 @@ list_literal
       #listLiteral
     ;
 
-// العمليات داخل {{ ... }}
 bin_op
     : PLUS
       #binOpPlus
@@ -195,7 +185,7 @@ bin_op
       #binOpOr
     | IN
       #binOpIn
-    | TILDE    // لدعم "hello" ~ "world"
+    | TILDE    
       #binOpTilde
     ;
 
@@ -216,7 +206,6 @@ jinja_if_block
 // تعابير داخل {% ... %}
 
 
-// نفس فكرة expr لكن بتوكنات _STMT
 stmt_expr
     : stmt_or_expr
       #stmtExpr
@@ -238,7 +227,6 @@ stmt_or_expr
     ;
 
 
-// القيم الأساسية داخل {% ... %}
 stmt_primary
     : IDENTIFIER_STMT (DOT_STMT IDENTIFIER_STMT)*          // user.active, user.address.city
       #stmtIdentifier
@@ -252,19 +240,16 @@ stmt_primary
       #stmtCall
     ;
 
-// [1, 2, x] داخل {% ... %}
 stmt_list_literal
     : LBRACKET_STMT (expr (COMMA_STMT expr)*)? RBRACKET_STMT
       #stmtListLiteral
     ;
 
-// استدعاء دالة داخل {% ... %} مثل func(x, y)
 stmt_call
     : IDENTIFIER_STMT LPAREN_STMT (stmt_or_expr (COMMA_STMT stmt_or_expr)*)? RPAREN_STMT
       #stmtFunctionCall
     ;
 
-// العمليات الحسابية والمقارنات داخل {% ... %}
 bin_op_stmt
     : PLUS_STMT
       #binOpStmtPlus
@@ -294,7 +279,6 @@ bin_op_stmt
       #binOpStmtIn
     ;
 
-// العمليات المنطقية داخل {% ... %}
 logical_op_stmt
     : AND_STMT
       #logicalOpStmtAnd
@@ -302,7 +286,6 @@ logical_op_stmt
       #logicalOpStmtOr
     ;
 
-// {% for x in expr %} ... {% endfor %}
 jinja_for_block
     : JINJA_STMT_START FOR IDENTIFIER_STMT IN_STMT stmt_expr (IF stmt_expr)? JINJA_STMT_END
       content
@@ -311,7 +294,6 @@ jinja_for_block
     ;
 
 
-// {% block name %} ... {% endblock %}
 jinja_block_block
     : JINJA_STMT_START BLOCK IDENTIFIER_STMT JINJA_STMT_END
       content
@@ -319,7 +301,6 @@ jinja_block_block
       #jinjaBlockBlock
     ;
 
-// {% macro name(args) %} ... {% endmacro %}
 jinja_macro_block
     : JINJA_STMT_START MACRO IDENTIFIER_STMT
       (LPAREN_STMT (IDENTIFIER_STMT (COMMA_STMT IDENTIFIER_STMT)*)? RPAREN_STMT)?
@@ -329,20 +310,17 @@ jinja_macro_block
       #jinjaMacroBlock
     ;
 
-// {% include "file.html" %}
 jinja_include_stmt
     : JINJA_STMT_START INCLUDE STRING_STMT JINJA_STMT_END
       #jinjaInclude
     ;
 
-// {% set name = expr %} ... {% endset %}
 jinja_set_block
     : JINJA_STMT_START SET IDENTIFIER_STMT EQ_STMT stmt_expr JINJA_STMT_END
       (content JINJA_STMT_START ENDSET JINJA_STMT_END)?
       #jinjaSetBlock
     ;
 
-// {% filter name %} ... {% endfilter %}
 jinja_filter_block
     : JINJA_STMT_START FILTER IDENTIFIER_STMT JINJA_STMT_END
       content
@@ -350,7 +328,6 @@ jinja_filter_block
       #jinjaFilterBlock
     ;
 
-// {% call macro(args) %} ... {% endcall %}
 jinja_call_block
     : JINJA_STMT_START CALL IDENTIFIER_STMT
       (LPAREN_STMT (stmt_or_expr (COMMA_STMT stmt_or_expr)*)? RPAREN_STMT)?
@@ -362,27 +339,21 @@ jinja_call_block
 
 // ================= CSS =================
 
-// عنصر الـ style كامل
 style_element
     : STYLE_OPEN css_rules STYLE_CLOSE_CSS   #styleBlock
     ;
 
-// مجموعة قواعد CSS
 css_rules
     : css_rule*   #cssRulesList
     ;
 
-// ================= RULES =================
 
-// قاعدة CSS: إما :root أو أي selector عادي
 css_rule
     : ROOT LBRACE_CSS css_body RBRACE_CSS   #rootRule
     | selector LBRACE_CSS css_body RBRACE_CSS   #selectorRule
     ;
 
-// ================= SELECTORS =================
 
-// selector رئيسي يمكن أن يحتوي على عدة selectors مفصولة بفاصلة
 selector
     : selector_part (COMMA_CSS selector_part)*   #selectorGroup
     ;
@@ -392,14 +363,12 @@ selector_part
     : simple_selector (simple_selector | combinator simple_selector)*   #selectorSequence
     ;
 
-// combinators بين selectors
 combinator
     : GTCSS     #childCombinator
     | PLUSCSS   #adjacentSiblingCombinator
     | TILDECSS  #generalSiblingCombinator
     ;
 
-// simple selector: عنصر، class، id، أو pseudo-class
 simple_selector
     : IDENT?
       (class_selector
@@ -423,14 +392,11 @@ pseudo_selector
     : COLON_CSS IDENT   #pseudoClassSelector
     ;
 
-// ================= BODY =================
 
-// جسم القاعدة: مجموعة declarations
 css_body
     : css_decl*   #cssBody
     ;
 
-// ================= DECLARATIONS =================
 
 // property: value; أو --variable: value;
 css_decl
@@ -438,7 +404,6 @@ css_decl
     | IDENT   COLON_CSS css_value SEMI_CSS?   #cssPropertyDeclaration
     ;
 
-// ================= VALUES =================
 
 // قيمة CSS: مجموعة من القيم atoms
 css_value
@@ -455,8 +420,6 @@ css_value_atom
     | COMMA_CSS      #commaSeparator
     | function_call2 #functionCallValue
     ;
-
-// ================= FUNCTIONS =================
 
 // دوال CSS: var(--x) أو rgba(...)
 function_call2
