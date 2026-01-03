@@ -4,12 +4,12 @@ parser grammar PythonParser;
 options { tokenVocab=PythonLexer; }
 
 file_input
-    : (stmt | NEWLINE)*   // zero or more statements or blank lines
+    : (stmt | NEWLINE)* EOF  // zero or more statements or blank lines
     ;
 
 stmt
-    : simple_stmt                            # SimpleStmt
-    | compound_stmt                          # CompoundStmt
+    : simple_stmt NEWLINE*                          # SimpleStmt
+    | compound_stmt  NEWLINE*                  # CompoundStmt
     ;
 
 simple_stmt
@@ -40,13 +40,12 @@ augassign
     | DIVASSIGN
     | MODASSIGN
     ;
-
 compound_stmt
     : if_stmt                                 # IfStatement
     | for_stmt                                # ForStatement
     | while_stmt                              # WhileStatement
     | funcdef                                 # FunctionDef
-    | classdef                                # ClassDef
+    | classdef                                # ClassDefinition
     | import_stmt                             # ImportStatement
     ;
 
@@ -63,7 +62,7 @@ while_stmt
     ;
 
 funcdef
-    : DEF IDENTIFIER LPAREN parameters? RPAREN COLON suite  # FunctionDefStmt
+    :  DEF IDENTIFIER LPAREN parameters? RPAREN COLON suite  # FunctionDefStmt
     ;
 
 parameters
@@ -92,7 +91,7 @@ expr
     : expr OR expr                      # OrExpr
     | expr AND expr                     # AndExpr
     | NOT expr                          # NotExpr
-    | expr (EQ|NEQ|LT|LTE|GT|GTE) expr  # ComparisonExpr
+    | expr (EQ|NEQ|LT|LTE|GT|GTE|ASSIGN) expr  # ComparisonExpr
     | expr PLUS expr                    # AddExpr
     | expr MINUS expr                   # SubExpr
     | expr MUL expr                     # MulExpr
@@ -108,75 +107,18 @@ atom
     | TRUE                              # TrueAtom
     | FALSE                             # FalseAtom
     | NONE                              # NoneAtom
+    | AT                                # AtDecorate
     | IDENTIFIER                        # NameAtom
+    | atom LPAREN arglist? RPAREN       # CallExpr
     | LBRACKET atom (COMMA atom)* RBRACKET   # BracketAtomExpr
     | LBRACE atom (COMMA atom)* RBRACE   # BRACEAtomExpr
     | LPAREN atom (COMMA)*(atom)* RPAREN   # ParenAtomExpr
     | LPAREN expr RPAREN                # ParenExpr
     | LBRACKET expr RBRACKET            # BracketExpr
     | atom LBRACKET expr RBRACKET       # IndexExpr
-    | atom DOT IDENTIFIER               # AttributeExpr
-    | atom LPAREN arglist? RPAREN       # CallExpr
+    | atom DOT IDENTIFIER          # AttributeExpr
     ;
 arglist
-    : expr (COMMA expr)* (COMMA)?       # ArgList
+    : expr  (COMMA expr)* (COMMA)?       # Arguments
     ;
 
-
-
-//test
-//    : or_test                                   # OrTestExpr
-//    ;
-//
-//or_test
-//    : and_test ( OR and_test )*              # OrTest
-//    ;
-//
-//and_test
-//    : not_test ( AND not_test )*             # AndTest
-//    ;
-//
-//not_test
-//    : NOT not_test                            # NotExpr
-//    | comparison                              # CompExpr
-//    ;
-//
-//comparison
-//    : arith_expr ( (EQ|NEQ|LT|LTE|GT|GTE) arith_expr )*  # ComparisonExpr
-//    ;
-//
-//arith_expr
-//    : term ( (PLUS|MINUS) term )*              # ArithExpr
-//    ;
-//
-//term
-//    : factor ( (MUL|DIV|MOD) factor )*        # TermExpr
-//    ;
-//
-//factor
-//    : (PLUS|MINUS) factor                       # UnaryExpr
-//    | atom                                      # AtomExpr
-//    ;
-//
-//atom
-//    : number                                    # NumberAtom
-//    | STRING                                    # StringAtom
-//    | TRUE                                      # TrueAtom
-//    | FALSE                                     # FalseAtom
-//    | NONE                                      # NoneAtom
-//    | LPAREN test RPAREN                        # ParenAtom
-//    | atom LBRACKET test RBRACKET               # IndexAtom
-//    | atom DOT IDENTIFIER                       # AttributeAtom
-//    | atom LPAREN arglist? RPAREN               # CallAtom
-//    |IDENTIFIER                                 # NameAtom
-//    ;
-//
-//number
-//       :
-//       INT                                      #IntNumber
-//       |
-//       DOUBLE                                   #DoubleNumber
-//       ;
-//arglist
-//    : test (COMMA test)* (COMMA)?               # ArgList
-//    ;

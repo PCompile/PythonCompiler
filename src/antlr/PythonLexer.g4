@@ -17,7 +17,7 @@ lexer grammar PythonLexer;
         if (next.getType() == EOF && !indents.isEmpty()) {
             while (!indents.isEmpty()) {
                 indents.pop();
-                CommonToken dedent = new CommonToken(DEDENT, "");
+                CommonToken dedent = new CommonToken(DEDENT,"<DEDENT>");
                 dedent.setLine(next.getLine());
                 pendingTokens.add(dedent);
             }
@@ -159,7 +159,7 @@ IDENTIFIER : [A-Za-z_][A-Za-z0-9_]* ;
 // ---------- COMMENTS ----------
 COMMENTS : '#' ~[\r\n]* -> skip ;
 NEWLINE
-    :   ('\r'? '\n')[ \t]*
+    :   ('\r'?'\n')[ \t]*
         {
         if(opened>0)
             skip();
@@ -180,12 +180,11 @@ NEWLINE
             }
          }
     }
-        -> skip
     ;
+WS: [ \n\r\t]+->skip;
 
 
 
-WS: [ \n\t\r]+->skip;
 
 
 
