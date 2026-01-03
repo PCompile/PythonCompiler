@@ -96,9 +96,9 @@ SPACE : '\n';
 
 DOTCSS   : '.' ;
 HEX_COLOR
-    : '#' [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F]                // 3 digits
+    : '#' [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F]               
     | '#' [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F]
-          [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F]                // 6 digits
+          [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F]                
     ;
 HASH     : '#' ;
 GTCSS    : '>' ;
