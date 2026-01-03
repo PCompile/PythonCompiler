@@ -27,7 +27,7 @@ public class SymbolTable {
         }
 
         public HashMap<String, Object> getAllAttributes() {
-            return new HashMap<>(attributes); // إرجاع نسخة للحماية
+            return new HashMap<>(attributes); 
         }
     }
 
@@ -97,10 +97,8 @@ public class SymbolTable {
         System.out.printf("%-15s %-15s %-40s\n", "Name", "Type", "Attributes");
         System.out.println("--------------------------------------------------------------------------");
 
-        // 1) اجمع كل الرموز في قائمة
         List<SymbolEntry> entries = new ArrayList<>(table.values());
 
-        // 2) رتّبهم حسب رقم السطر (إذا موجود)
         entries.sort((a, b) -> {
             Object la = a.getAttribute("line");
             Object lb = b.getAttribute("line");
@@ -111,20 +109,16 @@ public class SymbolTable {
             return Integer.compare(lineA, lineB);
         });
 
-        // 3) اطبع كل رمز مع كل الـ attributes
         for (SymbolEntry entry : entries) {
             String type = entry.getAttribute("type") != null ? entry.getAttribute("type").toString() : "";
 
-            // اجمع كل الـ attributes
             HashMap<String, Object> attrs = entry.getAllAttributes();
-            attrs.remove("type"); // لأننا نعرضه لحاله
-
+            attrs.remove("type");
             StringBuilder attrString = new StringBuilder();
             for (String key : attrs.keySet()) {
                 attrString.append(key).append("=").append(attrs.get(key)).append(", ");
             }
 
-            // إزالة الفاصلة الأخيرة
             if (attrString.length() > 2) {
                 attrString.setLength(attrString.length() - 2);
             }
